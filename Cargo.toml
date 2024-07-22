@@ -1,0 +1,30 @@
+[package]
+name = "sunform-as3query"
+version = "0.1.0"
+edition = "2021"
+authors = ["hydroperfox <hydroperfox@gmail.com>"]
+repository = "https://github.com/sunformsdk/as3query"
+keywords = ["actionscript", "as3", "compiler"]
+description = "Queries the ActionScript 3 language database."
+license = "Apache-2.0"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[lib]
+name = "sunform_as3query"
+path = "src/lib.rs"
+
+[dependencies]
+as3_parser = "1"
+bitflags = { version = "2.4.1", features = ["serde"] }
+by_address = "1.2.1"
+bytes = "1"
+conv = "0.3.3"
+dotenvy = "0.15.7"
+file_paths = "1.0.0"
+late_format = "1"
+lazy_static = "1.4.0"
+maplit = "1.0.2"
+num-derive = "0.4.1"
+num-traits = "0.2.17"
+smodel = "1"
