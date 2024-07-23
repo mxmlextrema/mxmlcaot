@@ -1,6 +1,6 @@
 use crate::ns::*;
 use bitflags::bitflags;
-use smodel::smodel;
+use hydroperfox_smodel::smodel;
 
 smodel! {
     type Arena = ThingyArena;

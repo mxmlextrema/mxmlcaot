@@ -6,7 +6,7 @@ pub mod util;
 
 /// Unified compiler module.
 pub mod ns {
-    pub use as3_parser::ns::*;
+    pub use sunform_as3parser::ns::*;
     pub use super::errors::*;
     pub use super::semantics::*;
     pub use super::util::*;

@@ -1,4 +1,4 @@
-pub use smodel::util::{
+pub use hydroperfox_smodel::util::{
     SharedArray,
     SharedMap,
     shared_array,
