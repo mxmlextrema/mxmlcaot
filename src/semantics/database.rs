@@ -41,7 +41,7 @@ pub struct Database {
     vector_type: RefCell<Option<Thingy>>,
     proxy_type: RefCell<Option<Thingy>>,
     dictionary_type: RefCell<Option<Thingy>>,
-    sunform_proxy_ns: RefCell<Option<Thingy>>,
+    flash_proxy_ns: RefCell<Option<Thingy>>,
     as3_ns: RefCell<Option<Thingy>>,
     empty_empty_qname: RefCell<Option<QName>>,
     const_eval_scope: RefCell<Option<Thingy>>,
@@ -122,7 +122,7 @@ impl Database {
             vector_type: RefCell::new(None),
             proxy_type: RefCell::new(None),
             dictionary_type: RefCell::new(None),
-            sunform_proxy_ns: RefCell::new(None),
+            flash_proxy_ns: RefCell::new(None),
             as3_ns: RefCell::new(None),
             empty_empty_qname: RefCell::new(None),
             const_eval_scope: RefCell::new(None),
@@ -146,11 +146,11 @@ impl Database {
         top_level_package.set_public_ns(Some(host.factory().create_public_ns(Some(top_level_package.clone().into()))));
         top_level_package.set_internal_ns(Some(host.factory().create_internal_ns(Some(top_level_package.clone().into()))));
 
-        // Initialize "sunform_proxy" namespace
-        host.sunform_proxy_ns.replace(Some(host.factory().create_user_ns("http://www.hydroperfox.com/2024/actionscript/sunform/proxy".into())));
+        // Initialize "flash_proxy" namespace
+        host.flash_proxy_ns.replace(Some(host.factory().create_user_ns("http://www.adobe.com/2006/actionscript/flash/proxy".into())));
 
         // Initialize the "AS3" namespace
-        host.as3_ns.replace(Some(host.factory().create_user_ns("http://www.hydroperfox.com/AS3/2024/builtin".into())));
+        host.as3_ns.replace(Some(host.factory().create_user_ns("http://adobe.com/AS3/2006/builtin".into())));
 
         // Initialize empty-empty QName
         host.empty_empty_qname.replace(Some(host.factory().create_qname(&host.factory().create_user_ns("".into()), "".into())));
@@ -238,7 +238,7 @@ impl Database {
         if let Some(p) = self.sunform_utils_package.borrow().as_ref() {
             return p.clone();
         }
-        let p = self.factory().create_package(["sunform", "utils"]);
+        let p = self.factory().create_package(["flash", "utils"]);
         self.sunform_utils_package.replace(Some(p.clone()));
         p
     }
@@ -341,9 +341,9 @@ impl Database {
         }
     }
 
-    /// The `sunform.utils.sunform_proxy` namespace.
-    pub fn sunform_proxy_ns(&self) -> Thingy {
-        self.sunform_proxy_ns.borrow().as_ref().unwrap().clone()
+    /// The `sunform.utils.flash_proxy` namespace.
+    pub fn flash_proxy_ns(&self) -> Thingy {
+        self.flash_proxy_ns.borrow().as_ref().unwrap().clone()
     }
 
     /// The `AS3` namespace.
