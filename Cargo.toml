@@ -1,9 +1,9 @@
 [package]
-name = "sunform-as3query"
+name = "mxmlextrema-as3query"
 version = "0.2.1"
 edition = "2021"
 authors = ["hydroperfox <hydroperfox@gmail.com>"]
-repository = "https://github.com/sunformsdk/as3query"
+repository = "https://github.com/mxmlextremasdk/as3query"
 keywords = ["actionscript", "as3", "actionscript3"]
 description = "Queries the ActionScript 3 language database."
 license = "Apache-2.0"
@@ -11,7 +11,7 @@ license = "Apache-2.0"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [lib]
-name = "sunform_as3query"
+name = "mxmlextrema_as3query"
 path = "src/lib.rs"
 
 [dependencies]
@@ -27,4 +27,4 @@ num-traits = "0.2.17"
 hydroperfox-filepaths = "1"
 hydroperfox-lateformat = "1"
 hydroperfox-smodel = "1"
-sunform-as3parser = "1"
+mxmlextrema-as3parser = "1"

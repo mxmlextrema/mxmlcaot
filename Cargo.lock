@@ -300,7 +300,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "sunform-as3parser"
+name = "mxmlextrema-as3parser"
 version = "1.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7be4df81e243ce07f1189725e8a15c7b5bcd6e7781cf32130de08294b9260c52"
@@ -325,7 +325,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "sunform-as3query"
+name = "mxmlextrema-as3query"
 version = "0.2.1"
 dependencies = [
  "bitflags",
@@ -340,7 +340,7 @@ dependencies = [
  "maplit",
  "num-derive",
  "num-traits",
- "sunform-as3parser",
+ "mxmlextrema-as3parser",
 ]
 
 [[package]]

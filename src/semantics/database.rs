@@ -19,7 +19,7 @@ pub struct Database {
     unresolved_thingy: Thingy,
     pub(crate) top_level_package: Thingy,
     as3_vec_package: RefCell<Option<Thingy>>,
-    sunform_utils_package: RefCell<Option<Thingy>>,
+    mxmlextrema_utils_package: RefCell<Option<Thingy>>,
     any_type: Thingy,
     void_type: Thingy,
     object_type: RefCell<Option<Thingy>>,
@@ -92,7 +92,7 @@ impl Database {
             qnames,
             top_level_package: top_level_package.clone().into(),
             as3_vec_package: RefCell::new(None),
-            sunform_utils_package: RefCell::new(None),
+            mxmlextrema_utils_package: RefCell::new(None),
             invalidation_thingy,
             unresolved_thingy,
 
@@ -234,12 +234,12 @@ impl Database {
         p
     }
 
-    pub fn sunform_utils_package(&self) -> Thingy {
-        if let Some(p) = self.sunform_utils_package.borrow().as_ref() {
+    pub fn mxmlextrema_utils_package(&self) -> Thingy {
+        if let Some(p) = self.mxmlextrema_utils_package.borrow().as_ref() {
             return p.clone();
         }
         let p = self.factory().create_package(["flash", "utils"]);
-        self.sunform_utils_package.replace(Some(p.clone()));
+        self.mxmlextrema_utils_package.replace(Some(p.clone()));
         p
     }
 
@@ -313,12 +313,12 @@ impl Database {
         }
     }
 
-    /// Retrieves `sunform.utils.Proxy`, a possibly unresolved thing.
+    /// Retrieves `mxmlextrema.utils.Proxy`, a possibly unresolved thing.
     pub fn proxy_type(&self) -> Thingy {
         if let Some(r) = self.proxy_type.borrow().as_ref() {
             return r.clone();
         }
-        let pckg = self.sunform_utils_package();
+        let pckg = self.mxmlextrema_utils_package();
         if let Some(r) = pckg.properties(self).get(&self.factory().create_qname(&pckg.public_ns().unwrap().into(), "Proxy".to_owned())) {
             self.proxy_type.replace(Some(r.clone()));
             r
@@ -327,12 +327,12 @@ impl Database {
         }
     }
 
-    /// Retrieves `sunform.utils.Dictionary`, a possibly unresolved thing.
+    /// Retrieves `mxmlextrema.utils.Dictionary`, a possibly unresolved thing.
     pub fn dictionary_type(&self) -> Thingy {
         if let Some(r) = self.dictionary_type.borrow().as_ref() {
             return r.clone();
         }
-        let pckg = self.sunform_utils_package();
+        let pckg = self.mxmlextrema_utils_package();
         if let Some(r) = pckg.properties(self).get(&self.factory().create_qname(&pckg.public_ns().unwrap().into(), "Dictionary".to_owned())) {
             self.dictionary_type.replace(Some(r.clone()));
             r
@@ -341,7 +341,7 @@ impl Database {
         }
     }
 
-    /// The `sunform.utils.flash_proxy` namespace.
+    /// The `mxmlextrema.utils.flash_proxy` namespace.
     pub fn flash_proxy_ns(&self) -> Thingy {
         self.flash_proxy_ns.borrow().as_ref().unwrap().clone()
     }
