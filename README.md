@@ -18,3 +18,7 @@ let db = Database::new(Default::default());
 let foo_bar = db.factory().create_package(["foo", "bar"]);
 println!("Package name: {}", foo_bar.fully_qualified_name());
 ```
+
+## License
+
+Apache 2.0
