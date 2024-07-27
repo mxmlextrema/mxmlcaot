@@ -1,14 +1,14 @@
-mod interface_implementations;
-pub use interface_implementations::*;
+mod interface_implement;
+pub use interface_implement::*;
 
-mod method_overriding;
-pub use method_overriding::*;
+mod method_override;
+pub use method_override::*;
 
-mod name_map;
-pub use name_map::*;
+mod names;
+pub use names::*;
 
-mod number_variant;
-pub use number_variant::*;
+mod number;
+pub use number::*;
 
 mod property_lookup;
 pub use property_lookup::*;
@@ -17,17 +17,17 @@ mod database;
 pub use database::*;
 
 #[allow(unused_variables)]
-mod thingy;
-pub use thingy::*;
+mod entity;
+pub use entity::*;
 
-mod thingy_factory;
-pub use thingy_factory::*;
+mod factory;
+pub use factory::*;
 
-mod type_conversion;
-pub use type_conversion::*;
+mod conversion;
+pub use conversion::*;
 
-mod type_substitution;
-pub use type_substitution::*;
+mod apply_type;
+pub use apply_type::*;
 
 mod unused;
 pub use unused::*;

@@ -8,14 +8,14 @@ use std::ops::{Add, BitAnd, BitOr, BitXor, Div, Mul, Rem, Shl, Shr, Sub};
 /// Represents a numeric value represented as one of the data types
 /// `Number`, `float`, `uint`, or `int`.
 #[derive(Clone, PartialEq, PartialOrd)]
-pub enum NumberVariant {
+pub enum Number {
     Number(f64),
     Float(f32),
     Int(i32),
     Uint(u32),
 }
 
-impl Add for NumberVariant {
+impl Add for Number {
     type Output = Self;
     fn add(self, rhs: Self) -> Self::Output {
         match self {
@@ -39,7 +39,7 @@ impl Add for NumberVariant {
     }
 }
 
-impl Sub for NumberVariant {
+impl Sub for Number {
     type Output = Self;
     fn sub(self, rhs: Self) -> Self::Output {
         match self {
@@ -63,7 +63,7 @@ impl Sub for NumberVariant {
     }
 }
 
-impl Mul for NumberVariant {
+impl Mul for Number {
     type Output = Self;
     fn mul(self, rhs: Self) -> Self::Output {
         match self {
@@ -87,7 +87,7 @@ impl Mul for NumberVariant {
     }
 }
 
-impl Div for NumberVariant {
+impl Div for Number {
     type Output = Self;
     fn div(self, rhs: Self) -> Self::Output {
         match self {
@@ -111,7 +111,7 @@ impl Div for NumberVariant {
     }
 }
 
-impl Rem for NumberVariant {
+impl Rem for Number {
     type Output = Self;
     fn rem(self, rhs: Self) -> Self::Output {
         match self {
@@ -135,7 +135,7 @@ impl Rem for NumberVariant {
     }
 }
 
-impl std::ops::Neg for NumberVariant {
+impl std::ops::Neg for Number {
     type Output = Self;
     fn neg(self) -> Self::Output {
         match self {
@@ -147,7 +147,7 @@ impl std::ops::Neg for NumberVariant {
     }
 }
 
-impl BitAnd for NumberVariant {
+impl BitAnd for Number {
     type Output = Self;
     fn bitand(self, rhs: Self) -> Self::Output {
         match self {
@@ -171,7 +171,7 @@ impl BitAnd for NumberVariant {
     }
 }
 
-impl BitXor for NumberVariant {
+impl BitXor for Number {
     type Output = Self;
     fn bitxor(self, rhs: Self) -> Self::Output {
         match self {
@@ -195,7 +195,7 @@ impl BitXor for NumberVariant {
     }
 }
 
-impl BitOr for NumberVariant {
+impl BitOr for Number {
     type Output = Self;
     fn bitor(self, rhs: Self) -> Self::Output {
         match self {
@@ -219,7 +219,7 @@ impl BitOr for NumberVariant {
     }
 }
 
-impl Shl for NumberVariant {
+impl Shl for Number {
     type Output = Self;
     fn shl(self, rhs: Self) -> Self::Output {
         match self {
@@ -243,7 +243,7 @@ impl Shl for NumberVariant {
     }
 }
 
-impl Shr for NumberVariant {
+impl Shr for Number {
     type Output = Self;
     fn shr(self, rhs: Self) -> Self::Output {
         match self {
@@ -267,8 +267,8 @@ impl Shr for NumberVariant {
     }
 }
 
-impl NumberVariant {
-    pub fn zero(type_thing: &Thingy, host: &Database) -> Self {
+impl Number {
+    pub fn zero(type_thing: &Entity, host: &Database) -> Self {
         if type_thing == &host.number_type() {
             Self::Number(0.0)
         } else if type_thing == &host.int_type() {
@@ -286,7 +286,7 @@ impl NumberVariant {
         }
     }
 
-    pub fn nan(type_thing: &Thingy, host: &Database) -> Self {
+    pub fn nan(type_thing: &Entity, host: &Database) -> Self {
         if type_thing == &host.number_type() {
             Self::Number(f64::NAN)
         } else if type_thing == &host.float_type() {
@@ -296,7 +296,7 @@ impl NumberVariant {
         }
     }
 
-    pub fn one(type_thing: &Thingy, host: &Database) -> Self {
+    pub fn one(type_thing: &Entity, host: &Database) -> Self {
         if type_thing == &host.number_type() {
             Self::Number(1.0)
         } else if type_thing == &host.int_type() {
@@ -314,7 +314,7 @@ impl NumberVariant {
         }
     }
 
-    pub fn minimum_value(type_thing: &Thingy, host: &Database) -> Self {
+    pub fn minimum_value(type_thing: &Entity, host: &Database) -> Self {
         if type_thing == &host.number_type() {
             Self::Number(f64::NEG_INFINITY)
         } else if type_thing == &host.int_type() {
@@ -332,7 +332,7 @@ impl NumberVariant {
         }
     }
 
-    pub fn maximum_value(type_thing: &Thingy, host: &Database) -> Self {
+    pub fn maximum_value(type_thing: &Entity, host: &Database) -> Self {
         if type_thing == &host.number_type() {
             Self::Number(f64::INFINITY)
         } else if type_thing == &host.int_type() {
@@ -482,7 +482,7 @@ impl NumberVariant {
         }
     }
 
-    pub fn convert_type(&self, target_type: &Thingy, host: &Database) -> Result<Self, DeferError> {
+    pub fn convert_type(&self, target_type: &Entity, host: &Database) -> Result<Self, DeferError> {
         let number_type = host.number_type().defer()?;
         let float_type = host.float_type().defer()?;
         let int_type = host.int_type().defer()?;
@@ -526,19 +526,19 @@ impl NumberVariant {
     }
 
     pub fn as_double(&self) -> Option<f64> {
-        if let NumberVariant::Number(v) = self { Some(*v) } else { None }
+        if let Number::Number(v) = self { Some(*v) } else { None }
     }
 
     pub fn as_float(&self) -> Option<f32> {
-        if let NumberVariant::Float(v) = self { Some(*v) } else { None }
+        if let Number::Float(v) = self { Some(*v) } else { None }
     }
 
     pub fn as_int(&self) -> Option<i32> {
-        if let NumberVariant::Int(v) = self { Some(*v) } else { None }
+        if let Number::Int(v) = self { Some(*v) } else { None }
     }
 
     pub fn as_uint(&self) -> Option<u32> {
-        if let NumberVariant::Uint(v) = self { Some(*v) } else { None }
+        if let Number::Uint(v) = self { Some(*v) } else { None }
     }
 
     pub fn force_double(&self) -> f64 {

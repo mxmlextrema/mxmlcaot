@@ -1,7 +1,7 @@
 use crate::ns::*;
 
 #[derive(Clone, Copy, PartialEq, Eq)]
-pub enum TypeConversionVariant {
+pub enum ConversionKind {
     /// Implicit conversion.
     FromAny,
 
@@ -108,7 +108,7 @@ pub enum TypeConversionVariant {
     ToInt,
 }
 
-impl TypeConversionVariant {
+impl ConversionKind {
     pub fn is_implicit(&self) -> bool {
         [
             Self::FromAny,
@@ -124,17 +124,17 @@ impl TypeConversionVariant {
     }
 }
 
-pub struct TypeConversions<'a>(pub &'a Database);
+pub struct ConversionMethods<'a>(pub &'a Database);
 
-impl<'a> TypeConversions<'a> {
-    pub fn implicit_constant(&self, value: &Thingy, target_type: &Thingy) -> Result<Option<Thingy>, DeferError> {
+impl<'a> ConversionMethods<'a> {
+    pub fn constant(&self, value: &Entity, target_type: &Entity) -> Result<Option<Entity>, DeferError> {
         let from_type = value.static_type(self.0);
         if &from_type == target_type {
             return Ok(Some(value.clone()));
         }
 
-        if value.is::<InvalidationThingy>() || from_type.is::<InvalidationThingy>() || target_type.is::<InvalidationThingy>() {
-            return Ok(Some(self.0.invalidation_thingy()));
+        if value.is::<InvalidationEntity>() || from_type.is::<InvalidationEntity>() || target_type.is::<InvalidationEntity>() {
+            return Ok(Some(self.0.invalidation_entity()));
         }
 
         if !value.is::<Constant>() {
@@ -180,30 +180,30 @@ impl<'a> TypeConversions<'a> {
         Ok(None)
     }
 
-    pub fn implicit(&self, value: &Thingy, target_type: &Thingy, optional: bool) -> Result<Option<Thingy>, DeferError> {
+    pub fn implicit(&self, value: &Entity, target_type: &Entity, optional: bool) -> Result<Option<Entity>, DeferError> {
         let from_type = value.static_type(self.0);
         if &from_type == target_type {
             return Ok(Some(value.clone()));
         }
 
-        let kc = self.implicit_constant(value, target_type)?;
+        let kc = self.constant(value, target_type)?;
         if kc.is_some() {
             return Ok(kc);
         }
 
         // From *
         if from_type.is::<AnyType>() {
-            return Ok(Some(self.0.factory().create_conversion_value(value, TypeConversionVariant::FromAny, optional, target_type)?));
+            return Ok(Some(self.0.factory().create_conversion_value(value, ConversionKind::FromAny, optional, target_type)?));
         }
 
         // To *
         if target_type.is::<AnyType>() {
-            return Ok(Some(self.0.factory().create_conversion_value(value, TypeConversionVariant::ToAny, optional, target_type)?));
+            return Ok(Some(self.0.factory().create_conversion_value(value, ConversionKind::ToAny, optional, target_type)?));
         }
 
         // Between number types
         if self.0.numeric_types()?.contains(&from_type) && self.0.numeric_types()?.contains(&target_type) {
-            return Ok(Some(self.0.factory().create_conversion_value(value, TypeConversionVariant::BetweenNumber, optional, target_type)?));
+            return Ok(Some(self.0.factory().create_conversion_value(value, ConversionKind::BetweenNumber, optional, target_type)?));
         }
 
         let from_type_esc = from_type.escape_of_nullable_or_non_nullable();
@@ -215,7 +215,7 @@ impl<'a> TypeConversions<'a> {
 
             // ToCovariant
             if both_include_null || both_dont_include_null {
-                return Ok(Some(self.0.factory().create_conversion_value(value, TypeConversionVariant::ToCovariant, optional, target_type)?));
+                return Ok(Some(self.0.factory().create_conversion_value(value, ConversionKind::ToCovariant, optional, target_type)?));
             }
         }
 
@@ -227,32 +227,32 @@ impl<'a> TypeConversions<'a> {
 
             // ItrfcToObject
             if both_include_null || both_dont_include_null {
-                return Ok(Some(self.0.factory().create_conversion_value(value, TypeConversionVariant::ItrfcToObject, optional, target_type)?));
+                return Ok(Some(self.0.factory().create_conversion_value(value, ConversionKind::ItrfcToObject, optional, target_type)?));
             }
         }
 
         if target_type.is::<NullableType>() {
             // NonNullableToNullable
             if from_type.is::<NonNullableType>() && from_type.base() == target_type.base() {
-                return Ok(Some(self.0.factory().create_conversion_value(value, TypeConversionVariant::NonNullableToNullable, optional, target_type)?));
+                return Ok(Some(self.0.factory().create_conversion_value(value, ConversionKind::NonNullableToNullable, optional, target_type)?));
             }
 
             // AsIsToNullable
             if from_type == target_type.base() {
-                return Ok(Some(self.0.factory().create_conversion_value(value, TypeConversionVariant::AsIsToNullable, optional, target_type)?));
+                return Ok(Some(self.0.factory().create_conversion_value(value, ConversionKind::AsIsToNullable, optional, target_type)?));
             }
         }
 
         /*
         // NullableToAsIs
         if from_type.is::<NullableType>() && target_type == &from_type.base() && target_type.includes_null(self.0)? {
-            return Ok(Some(self.0.factory().create_conversion_value(value, TypeConversionVariant::NullableToAsIs, optional, target_type)?));
+            return Ok(Some(self.0.factory().create_conversion_value(value, ConversionKind::NullableToAsIs, optional, target_type)?));
         }
         */
 
         // NonNullableToAsIs
         if from_type.is::<NonNullableType>() && target_type == &from_type.base() {
-            return Ok(Some(self.0.factory().create_conversion_value(value, TypeConversionVariant::NonNullableToAsIs, optional, target_type)?));
+            return Ok(Some(self.0.factory().create_conversion_value(value, ConversionKind::NonNullableToAsIs, optional, target_type)?));
         }
 
         let function_type = self.0.function_type().defer()?;
@@ -263,14 +263,14 @@ impl<'a> TypeConversions<'a> {
 
             // FunctionToStructuralFunction
             if both_include_null || both_dont_include_null {
-                return Ok(Some(self.0.factory().create_conversion_value(value, TypeConversionVariant::FunctionToStructuralFunction, optional, target_type)?));
+                return Ok(Some(self.0.factory().create_conversion_value(value, ConversionKind::FunctionToStructuralFunction, optional, target_type)?));
             }
         }
 
         Ok(None)
     }
 
-    pub fn explicit(&self, value: &Thingy, target_type: &Thingy, optional: bool) -> Result<Option<Thingy>, DeferError> {
+    pub fn explicit(&self, value: &Entity, target_type: &Entity, optional: bool) -> Result<Option<Entity>, DeferError> {
         let from_type = value.static_type(self.0);
         if &from_type == target_type {
             return Ok(Some(value.clone()));
@@ -291,7 +291,7 @@ impl<'a> TypeConversions<'a> {
 
             // ObjectToItrfc
             if both_include_null || both_dont_include_null {
-                return Ok(Some(self.0.factory().create_conversion_value(value, TypeConversionVariant::ObjectToItrfc, optional, target_type)?));
+                return Ok(Some(self.0.factory().create_conversion_value(value, ConversionKind::ObjectToItrfc, optional, target_type)?));
             }
         }
 
@@ -301,7 +301,7 @@ impl<'a> TypeConversions<'a> {
 
             // ToContravariant
             if both_include_null || both_dont_include_null {
-                return Ok(Some(self.0.factory().create_conversion_value(value, TypeConversionVariant::ToContravariant, optional, target_type)?));
+                return Ok(Some(self.0.factory().create_conversion_value(value, ConversionKind::ToContravariant, optional, target_type)?));
             }
         }
 
@@ -318,7 +318,7 @@ impl<'a> TypeConversions<'a> {
 
                     // ToCovariantVector
                     if both_include_null || both_dont_include_null {
-                        return Ok(Some(self.0.factory().create_conversion_value(value, TypeConversionVariant::ToCovariantVector, optional, target_type)?));
+                        return Ok(Some(self.0.factory().create_conversion_value(value, ConversionKind::ToCovariantVector, optional, target_type)?));
                     }
                 }
             }
@@ -328,51 +328,51 @@ impl<'a> TypeConversions<'a> {
 
         // StringToEnum
         if from_type.escape_of_non_nullable() == string_type && target_type.escape_of_non_nullable().is::<EnumType>() {
-            return Ok(Some(self.0.factory().create_conversion_value(value, TypeConversionVariant::StringToEnum, optional, target_type)?));
+            return Ok(Some(self.0.factory().create_conversion_value(value, ConversionKind::StringToEnum, optional, target_type)?));
         }
 
         let number_type = self.0.number_type().defer()?;
 
         // NumberToEnum
         if from_type == number_type && target_type.escape_of_non_nullable().is::<EnumType>() {
-            return Ok(Some(self.0.factory().create_conversion_value(value, TypeConversionVariant::NumberToEnum, optional, target_type)?));
+            return Ok(Some(self.0.factory().create_conversion_value(value, ConversionKind::NumberToEnum, optional, target_type)?));
         }
 
         if target_type == &string_type {
-            return Ok(Some(self.0.factory().create_conversion_value(value, TypeConversionVariant::ToString, optional, target_type)?));
+            return Ok(Some(self.0.factory().create_conversion_value(value, ConversionKind::ToString, optional, target_type)?));
         }
 
         if target_type == &number_type {
-            return Ok(Some(self.0.factory().create_conversion_value(value, TypeConversionVariant::ToNumber, optional, target_type)?));
+            return Ok(Some(self.0.factory().create_conversion_value(value, ConversionKind::ToNumber, optional, target_type)?));
         }
 
         let float_type = self.0.float_type().defer()?;
 
         if target_type == &float_type {
-            return Ok(Some(self.0.factory().create_conversion_value(value, TypeConversionVariant::ToFloat, optional, target_type)?));
+            return Ok(Some(self.0.factory().create_conversion_value(value, ConversionKind::ToFloat, optional, target_type)?));
         }
 
         let uint_type = self.0.uint_type().defer()?;
 
         if target_type == &uint_type {
-            return Ok(Some(self.0.factory().create_conversion_value(value, TypeConversionVariant::ToUint, optional, target_type)?));
+            return Ok(Some(self.0.factory().create_conversion_value(value, ConversionKind::ToUint, optional, target_type)?));
         }
 
         let int_type = self.0.int_type().defer()?;
 
         if target_type == &int_type {
-            return Ok(Some(self.0.factory().create_conversion_value(value, TypeConversionVariant::ToInt, optional, target_type)?));
+            return Ok(Some(self.0.factory().create_conversion_value(value, ConversionKind::ToInt, optional, target_type)?));
         }
 
         let boolean_type = self.0.boolean_type().defer()?;
 
         if target_type == &boolean_type {
-            return Ok(Some(self.0.factory().create_conversion_value(value, TypeConversionVariant::ToBoolean, optional, target_type)?));
+            return Ok(Some(self.0.factory().create_conversion_value(value, ConversionKind::ToBoolean, optional, target_type)?));
         }
 
         // FromTypeParameter
         if from_type.escape_of_non_nullable().is::<TypeParameterType>() {
-            return Ok(Some(self.0.factory().create_conversion_value(value, TypeConversionVariant::FromTypeParameter, optional, target_type)?));
+            return Ok(Some(self.0.factory().create_conversion_value(value, ConversionKind::FromTypeParameter, optional, target_type)?));
         }
 
         if from_type_esc.is_parameterized_type_or_type_after_sub() && target_type_esc.is_parameterized_type_or_type_after_sub() {
@@ -387,7 +387,7 @@ impl<'a> TypeConversions<'a> {
             if from_origin == target_origin && from_origin != vector_type
             && (both_include_null || both_dont_include_null)
             {
-                return Ok(Some(self.0.factory().create_conversion_value(value, TypeConversionVariant::ParameterizedTypeAlter, optional, target_type)?));
+                return Ok(Some(self.0.factory().create_conversion_value(value, ConversionKind::ParameterizedTypeAlter, optional, target_type)?));
             }
         }
 

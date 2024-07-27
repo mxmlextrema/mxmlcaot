@@ -1,9 +1,9 @@
 use crate::ns::*;
 
-pub struct InterfaceImplementations<'a>(pub &'a Database);
+pub struct InterfaceImplement<'a>(pub &'a Database);
 
-impl<'a> InterfaceImplementations<'a> {
-    pub fn verify(&self, implementor: &Thingy, interface: &Thingy) -> Result<Vec<InterfaceImplementationLog>, DeferError> {
+impl<'a> InterfaceImplement<'a> {
+    pub fn verify(&self, implementor: &Entity, interface: &Entity) -> Result<Vec<InterfaceImplementationLog>, DeferError> {
         let mut interfaces = interface.all_ascending_types(self.0);
         interfaces.push(interface.clone());
 
@@ -102,7 +102,7 @@ pub enum InterfaceImplementationLog {
     SetterNotImplemented { name: String },
     PropertyMustBeMethod { name: String },
     PropertyMustBeVirtual { name: String },
-    IncompatibleMethodSignature { name: String, expected_signature: Thingy },
-    IncompatibleGetterSignature { name: String, expected_signature: Thingy },
-    IncompatibleSetterSignature { name: String, expected_signature: Thingy },
+    IncompatibleMethodSignature { name: String, expected_signature: Entity },
+    IncompatibleGetterSignature { name: String, expected_signature: Entity },
+    IncompatibleSetterSignature { name: String, expected_signature: Entity },
 }

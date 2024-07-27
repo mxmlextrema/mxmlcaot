@@ -16,7 +16,7 @@ pub enum PropertyLookupError {
     AmbiguousReference(String),
     VoidBase,
     NullableObject {
-        nullable_type: Thingy,
+        nullable_type: Entity,
     },
 }
 
@@ -30,18 +30,18 @@ impl Debug for PropertyLookupError {
 pub struct TypeExpectError();
 
 #[derive(Clone)]
-pub enum MethodOverridingError {
+pub enum MethodOverrideError {
     Defer,
     MustOverrideAMethod,
     IncompatibleOverride {
-        expected_signature: Thingy,
-        actual_signature: Thingy,
+        expected_signature: Entity,
+        actual_signature: Entity,
     },
     OverridingFinalMethod,
 }
 
-impl Debug for MethodOverridingError {
+impl Debug for MethodOverrideError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "MethodOverridingError()")
+        write!(f, "MethodOverrideError()")
     }
 }

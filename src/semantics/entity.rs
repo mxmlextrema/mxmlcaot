@@ -3,14 +3,12 @@ use bitflags::bitflags;
 use hydroperfox_smodel::smodel;
 
 smodel! {
-    type Arena = ThingyArena;
+    type Arena = EntityArena;
 
-    /// Unified semantic data type representing
-    /// one of several ActionScript 3 variants,
-    /// such as classes, variable slots, and reference values.
-    pub struct Thingy {
-        pub fn defer(&self) -> Result<Thingy, DeferError> {
-            if self.is::<UnresolvedThingy>() {
+    /// Semantic data type representing one of several ActionScript 3 elements.
+    pub struct Entity {
+        pub fn defer(&self) -> Result<Entity, DeferError> {
+            if self.is::<UnresolvedEntity>() {
                 Err(DeferError(None))
             } else {
                 Ok(self.clone())
@@ -25,18 +23,18 @@ smodel! {
             panic!();
         }
 
-        pub fn qualifier(&self) -> Option<Thingy> {
+        pub fn qualifier(&self) -> Option<Entity> {
             panic!();
         }
 
-        pub fn key(&self) -> Thingy {
+        pub fn key(&self) -> Entity {
             panic!();
         }
 
         /// Returns the static type of a property, whether for a type, variable, virtual or method slot or namespace,
         /// or act as identity of a value's static type.
-        /// Possibly `UnresolvedThingy`.
-        pub fn property_static_type(&self, host: &Database) -> Thingy {
+        /// Possibly `UnresolvedEntity`.
+        pub fn property_static_type(&self, host: &Database) -> Entity {
             panic!();
         }
 
@@ -52,11 +50,11 @@ smodel! {
             None
         }
 
-        pub fn asdoc(&self) -> Option<Rc<AsDoc>> {
+        pub fn asdoc(&self) -> Option<Rc<Asdoc>> {
             None
         }
 
-        pub fn set_asdoc(&self, asdoc: Option<Rc<AsDoc>>) {}
+        pub fn set_asdoc(&self, asdoc: Option<Rc<Asdoc>>) {}
 
         pub fn metadata(&self) -> SharedArray<Rc<Metadata>> {
             panic!();
@@ -70,21 +68,21 @@ smodel! {
         }
 
         /// Escapes out of a nullable type layer.
-        pub fn escape_of_nullable(&self) -> Thingy {
+        pub fn escape_of_nullable(&self) -> Entity {
             self.clone()
         }
 
         /// Escapes out of a non nullable type layer.
-        pub fn escape_of_non_nullable(&self) -> Thingy {
+        pub fn escape_of_non_nullable(&self) -> Entity {
             self.clone()
         }
 
         /// Escapes out of a nullable or non nullable type layer.
-        pub fn escape_of_nullable_or_non_nullable(&self) -> Thingy {
+        pub fn escape_of_nullable_or_non_nullable(&self) -> Entity {
             self.clone()
         }
 
-        pub fn object(&self) -> Thingy {
+        pub fn object(&self) -> Entity {
             panic!();
         }
 
@@ -92,11 +90,11 @@ smodel! {
             "".into()
         }
 
-        pub fn open_ns_set(&self) -> SharedArray<Thingy> {
+        pub fn open_ns_set(&self) -> SharedArray<Entity> {
             panic!();
         }
 
-        pub fn import_list(&self) -> SharedArray<Thingy> {
+        pub fn import_list(&self) -> SharedArray<Entity> {
             panic!();
         }
 
@@ -111,23 +109,23 @@ smodel! {
             "".into()
         }
 
-        pub fn class(&self) -> Thingy {
+        pub fn class(&self) -> Entity {
             panic!();
         }
 
-        pub fn interface(&self) -> Thingy {
+        pub fn interface(&self) -> Entity {
             panic!();
         }
 
-        pub fn package(&self) -> Thingy {
+        pub fn package(&self) -> Entity {
             panic!();
         }
 
-        pub fn of_method(&self) -> Thingy {
+        pub fn of_method(&self) -> Entity {
             panic!();
         }
         
-        pub fn search_activation(&self) -> Option<Thingy> {
+        pub fn search_activation(&self) -> Option<Entity> {
             for scope in self.descending_scope_hierarchy() {
                 if scope.is::<Activation>() {
                     return Some(scope);
@@ -136,23 +134,23 @@ smodel! {
             return None
         }
 
-        pub fn this(&self) -> Option<Thingy> {
+        pub fn this(&self) -> Option<Entity> {
             panic!();
         }
         
-        pub fn set_this(&self, this: Option<Thingy>) {
+        pub fn set_this(&self, this: Option<Entity>) {
             panic!();
         }
         
-        pub fn property_has_capture(&self, property: &Thingy) -> bool {
+        pub fn property_has_capture(&self, property: &Entity) -> bool {
             panic!();
         }
         
-        pub fn set_property_has_capture(&self, property: &Thingy, value: bool) {
+        pub fn set_property_has_capture(&self, property: &Entity, value: bool) {
             panic!();
         }
 
-        pub fn concat_open_ns_set_of_scope_chain(&self) -> SharedArray<Thingy> {
+        pub fn concat_open_ns_set_of_scope_chain(&self) -> SharedArray<Entity> {
             let mut open_ns_set = SharedArray::new();
             open_ns_set.extend(self.open_ns_set().iter());
             let mut p = self.parent();
@@ -163,27 +161,27 @@ smodel! {
             open_ns_set
         }
 
-        pub fn referenced_type(&self) -> Thingy {
+        pub fn referenced_type(&self) -> Entity {
             panic!();
         }
 
-        pub fn referenced_ns(&self) -> Thingy {
+        pub fn referenced_ns(&self) -> Entity {
             panic!();
         }
 
-        pub fn shorthand_resolution(&self) -> Option<Thingy> {
+        pub fn shorthand_resolution(&self) -> Option<Entity> {
             panic!();
         }
 
-        pub fn set_shorthand_resolution(&self, value: Option<Thingy>) {
+        pub fn set_shorthand_resolution(&self, value: Option<Entity>) {
             panic!();
         }
 
-        pub fn field_slot(&self) -> Option<Thingy> {
+        pub fn field_slot(&self) -> Option<Entity> {
             panic!();
         }
 
-        pub fn set_field_slot(&self, value: Option<Thingy>) {
+        pub fn set_field_slot(&self, value: Option<Entity>) {
             panic!();
         }
 
@@ -194,55 +192,55 @@ smodel! {
             self.is::<MethodSlotAfterSubstitution>()
         }
 
-        pub fn parent(&self) -> Option<Thingy> {
+        pub fn parent(&self) -> Option<Entity> {
             panic!();
         }
 
-        pub fn set_parent(&self, p: Option<Thingy>) {
+        pub fn set_parent(&self, p: Option<Entity>) {
             panic!();
         }
 
-        pub fn package_concats(&self) -> SharedArray<Thingy> {
+        pub fn package_concats(&self) -> SharedArray<Entity> {
             panic!();
         }
 
-        pub fn public_ns(&self) -> Option<Thingy> {
+        pub fn public_ns(&self) -> Option<Entity> {
             panic!();
         }
 
-        pub fn set_public_ns(&self, ns: Option<Thingy>) {
+        pub fn set_public_ns(&self, ns: Option<Entity>) {
             panic!();
         }
 
-        pub fn private_ns(&self) -> Option<Thingy> {
+        pub fn private_ns(&self) -> Option<Entity> {
             panic!();
         }
 
-        pub fn set_private_ns(&self, ns: Option<Thingy>) {
+        pub fn set_private_ns(&self, ns: Option<Entity>) {
             panic!();
         }
 
-        pub fn protected_ns(&self) -> Option<Thingy> {
+        pub fn protected_ns(&self) -> Option<Entity> {
             panic!();
         }
 
-        pub fn set_protected_ns(&self, ns: Option<Thingy>) {
+        pub fn set_protected_ns(&self, ns: Option<Entity>) {
             panic!();
         }
 
-        pub fn static_protected_ns(&self) -> Option<Thingy> {
+        pub fn static_protected_ns(&self) -> Option<Entity> {
             panic!();
         }
 
-        pub fn set_static_protected_ns(&self, ns: Option<Thingy>) {
+        pub fn set_static_protected_ns(&self, ns: Option<Entity>) {
             panic!();
         }
 
-        pub fn internal_ns(&self) -> Option<Thingy> {
+        pub fn internal_ns(&self) -> Option<Entity> {
             panic!();
         }
 
-        pub fn set_internal_ns(&self, ns: Option<Thingy>) {
+        pub fn set_internal_ns(&self, ns: Option<Entity>) {
             panic!();
         }
 
@@ -274,7 +272,7 @@ smodel! {
             }
         }
 
-        pub fn is_package_self_referential(&self, pckg: &Thingy) -> bool {
+        pub fn is_package_self_referential(&self, pckg: &Entity) -> bool {
             if self == pckg {
                 return true;
             }
@@ -304,7 +302,7 @@ smodel! {
             panic!();
         }
 
-        pub fn number_value(&self) -> NumberVariant {
+        pub fn number_value(&self) -> Number {
             panic!();
         }
 
@@ -316,11 +314,11 @@ smodel! {
             panic!();
         }
 
-        pub fn type_default_value(&self, host: &Database) -> Result<Option<Thingy>, DeferError> {
+        pub fn type_default_value(&self, host: &Database) -> Result<Option<Entity>, DeferError> {
             panic!();
         }
 
-        pub fn conversion_variant(&self) -> TypeConversionVariant {
+        pub fn conversion_kind(&self) -> ConversionKind {
             panic!();
         }
 
@@ -328,7 +326,7 @@ smodel! {
             panic!();
         }
 
-        pub fn conversion_target(&self) -> Thingy {
+        pub fn conversion_target(&self) -> Entity {
             panic!();
         }
 
@@ -357,35 +355,35 @@ smodel! {
             panic!();
         }
 
-        pub fn scope(&self) -> Thingy {
+        pub fn scope(&self) -> Entity {
             panic!();
         }
 
-        pub fn getter(&self, host: &Database) -> Option<Thingy> {
+        pub fn getter(&self, host: &Database) -> Option<Entity> {
             panic!();
         }
 
-        pub fn set_getter(&self, m: Option<Thingy>) {
+        pub fn set_getter(&self, m: Option<Entity>) {
             panic!();
         }
 
-        pub fn setter(&self, host: &Database) -> Option<Thingy> {
+        pub fn setter(&self, host: &Database) -> Option<Entity> {
             panic!();
         }
 
-        pub fn set_setter(&self, m: Option<Thingy>) {
+        pub fn set_setter(&self, m: Option<Entity>) {
             panic!();
         }
 
-        pub fn static_type(&self, host: &Database) -> Thingy {
+        pub fn static_type(&self, host: &Database) -> Entity {
             panic!();
         }
 
-        pub fn set_static_type(&self, value: Thingy) {
+        pub fn set_static_type(&self, value: Entity) {
             panic!();
         }
 
-        pub fn clone_constant(&self, host: &Database) -> Thingy {
+        pub fn clone_constant(&self, host: &Database) -> Entity {
             panic!();
         }
 
@@ -445,17 +443,17 @@ smodel! {
         pub fn set_is_generator(&self, value: bool) {
         }
 
-        pub fn signature(&self, host: &Database) -> Thingy {
+        pub fn signature(&self, host: &Database) -> Entity {
             panic!();
         }
 
-        pub fn set_signature(&self, signature: &Thingy) {
+        pub fn set_signature(&self, signature: &Entity) {
             panic!();
         }
 
         /// If a type is `[T]`, returns `T`, either as an origin type parameter
         /// or as a substitute type.
-        pub fn array_element_type(&self, host: &Database) -> Result<Option<Thingy>, DeferError> {
+        pub fn array_element_type(&self, host: &Database) -> Result<Option<Entity>, DeferError> {
             let array_type = host.array_type().defer()?;
             if self == &array_type {
                 Ok(Some(array_type.type_params().unwrap().get(0).unwrap()))
@@ -468,7 +466,7 @@ smodel! {
 
         /// If a type is `Vector.<T>`, returns `T`, either as an origin type parameter
         /// or as a substitute type.
-        pub fn vector_element_type(&self, host: &Database) -> Result<Option<Thingy>, DeferError> {
+        pub fn vector_element_type(&self, host: &Database) -> Result<Option<Entity>, DeferError> {
             let vec_type = host.vector_type().defer()?;
             if self == &vec_type {
                 Ok(Some(vec_type.type_params().unwrap().get(0).unwrap()))
@@ -481,7 +479,7 @@ smodel! {
 
         /// If a type is `Promise.<T>`, returns `T`, either as an origin type parameter
         /// or as a substitute type.
-        pub fn promise_result_type(&self, host: &Database) -> Result<Option<Thingy>, DeferError> {
+        pub fn promise_result_type(&self, host: &Database) -> Result<Option<Entity>, DeferError> {
             let promise_type = host.promise_type().defer()?;
             if self == &promise_type {
                 Ok(Some(promise_type.type_params().unwrap().get(0).unwrap()))
@@ -492,15 +490,15 @@ smodel! {
             }
         }
 
-        pub fn type_after_sub_has_origin(&self, origin: &Thingy) -> bool {
+        pub fn type_after_sub_has_origin(&self, origin: &Entity) -> bool {
             self.is::<TypeAfterSubstitution>() && &self.origin() == origin
         }
 
-        pub fn is_type_or_type_after_sub_has_origin(&self, type_or_origin: &Thingy) -> bool {
+        pub fn is_type_or_type_after_sub_has_origin(&self, type_or_origin: &Entity) -> bool {
             self == type_or_origin || self.type_after_sub_has_origin(type_or_origin)
         }
 
-        pub fn origin_or_parameterized_type_identity(&self) -> Option<Thingy> {
+        pub fn origin_or_parameterized_type_identity(&self) -> Option<Entity> {
             if self.is::<TypeAfterSubstitution>() {
                 Some(self.origin())
             } else if self.type_params().is_some() {
@@ -529,7 +527,7 @@ smodel! {
             false
         }
 
-        pub fn wrap_property_reference(&self, host: &Database) -> Result<Thingy, DeferError> {
+        pub fn wrap_property_reference(&self, host: &Database) -> Result<Entity, DeferError> {
             if self.is::<Value>() {
                 return Ok(self.clone());
             }
@@ -546,7 +544,7 @@ smodel! {
             if self.is::<Namespace>() {
                 return host.factory().create_namespace_constant(self);
             }
-            if self.is::<InvalidationThingy>() {
+            if self.is::<InvalidationEntity>() {
                 return Ok(self.clone());
             }
             let parent = self.parent().unwrap();
@@ -560,31 +558,31 @@ smodel! {
             return host.factory().create_scope_reference_value(&parent, self);
         }
 
-        pub fn activation(&self) -> Option<Thingy> {
+        pub fn activation(&self) -> Option<Entity> {
             panic!();
         }
 
-        pub fn set_activation(&self, activation: Option<Thingy>) {
+        pub fn set_activation(&self, activation: Option<Entity>) {
             panic!();
         }
 
-        pub fn of_virtual_slot(&self, host: &Database) -> Option<Thingy> {
+        pub fn of_virtual_slot(&self, host: &Database) -> Option<Entity> {
             panic!();
         }
 
-        pub fn set_of_virtual_slot(&self, virtual_slot: Option<Thingy>) {
+        pub fn set_of_virtual_slot(&self, virtual_slot: Option<Entity>) {
             panic!();
         }
 
-        pub fn overriden_by(&self, host: &Database) -> SharedArray<Thingy> {
+        pub fn overriden_by(&self, host: &Database) -> SharedArray<Entity> {
             panic!();
         }
 
-        pub fn overrides_method(&self, host: &Database) -> Option<Thingy> {
+        pub fn overrides_method(&self, host: &Database) -> Option<Entity> {
             panic!();
         }
 
-        pub fn set_overrides_method(&self, method: Option<Thingy>) {
+        pub fn set_overrides_method(&self, method: Option<Entity>) {
             panic!();
         }
 
@@ -595,59 +593,59 @@ smodel! {
         pub fn set_is_constructor(&self, value: bool) {
         }
 
-        pub fn constructor_method(&self, host: &Database) -> Option<Thingy> {
+        pub fn constructor_method(&self, host: &Database) -> Option<Entity> {
             panic!();
         }
 
-        pub fn set_constructor_method(&self, m: Option<Thingy>) {}
+        pub fn set_constructor_method(&self, m: Option<Entity>) {}
 
-        pub fn known_subclasses(&self) -> SharedArray<Thingy> {
+        pub fn known_subclasses(&self) -> SharedArray<Entity> {
             panic!();
         }
 
         /// Includes possibly unresolved.
-        pub fn implements(&self, host: &Database) -> SharedArray<Thingy> {
+        pub fn implements(&self, host: &Database) -> SharedArray<Entity> {
             panic!();
         }
 
         /// Possibly unresolved.
-        pub fn extends_class(&self, host: &Database) -> Option<Thingy> {
+        pub fn extends_class(&self, host: &Database) -> Option<Entity> {
             None
         }
 
-        pub fn set_extends_class(&self, entity: Option<Thingy>) {
+        pub fn set_extends_class(&self, entity: Option<Entity>) {
             panic!();
         }
 
-        pub fn prototype(&self, host: &Database) -> NameMap {
+        pub fn prototype(&self, host: &Database) -> Names {
             panic!();
         }
 
-        pub fn properties(&self, host: &Database) -> NameMap {
+        pub fn properties(&self, host: &Database) -> Names {
             panic!();
         }
 
-        pub fn subpackages(&self) -> SharedMap<String, Thingy> {
+        pub fn subpackages(&self) -> SharedMap<String, Entity> {
             panic!();
         }
 
-        pub fn alias_of(&self) -> Thingy {
+        pub fn alias_of(&self) -> Entity {
             panic!();
         }
 
-        pub fn set_alias_of(&self, value: &Thingy) {
+        pub fn set_alias_of(&self, value: &Entity) {
             panic!();
         }
 
-        pub fn resolve_alias(&self) -> Thingy {
+        pub fn resolve_alias(&self) -> Entity {
             self.clone()
         }
 
-        pub fn property(&self) -> Thingy {
+        pub fn property(&self) -> Entity {
             panic!();
         }
 
-        pub fn set_property(&self, value: &Thingy) {
+        pub fn set_property(&self, value: &Entity) {
             panic!();
         }
 
@@ -684,47 +682,47 @@ smodel! {
             r
         }
 
-        pub fn type_params(&self) -> Option<SharedArray<Thingy>> {
+        pub fn type_params(&self) -> Option<SharedArray<Entity>> {
             None
         }
 
-        pub fn set_type_params(&self, list: Option<SharedArray<Thingy>>) {
+        pub fn set_type_params(&self, list: Option<SharedArray<Entity>>) {
         }
 
-        pub fn enum_member_number_mapping(&self) -> SharedMap<String, NumberVariant> {
+        pub fn enum_member_number_mapping(&self) -> SharedMap<String, Number> {
             panic!();
         }
 
-        pub fn enum_member_slot_mapping(&self) -> SharedMap<String, Thingy> {
+        pub fn enum_member_slot_mapping(&self) -> SharedMap<String, Entity> {
             panic!();
         }
 
-        pub fn known_implementors(&self) -> SharedArray<Thingy> {
+        pub fn known_implementors(&self) -> SharedArray<Entity> {
             panic!();
         }
 
         /// Includes possibly unresolved.
-        pub fn extends_interfaces(&self, host: &Database) -> SharedArray<Thingy> {
+        pub fn extends_interfaces(&self, host: &Database) -> SharedArray<Entity> {
             panic!();
         }
 
-        pub fn origin(&self) -> Thingy {
+        pub fn origin(&self) -> Entity {
             panic!();
         }
 
-        pub fn substitute_types(&self) -> SharedArray<Thingy> {
+        pub fn substitute_types(&self) -> SharedArray<Entity> {
             panic!();
         }
 
-        pub fn indirect_type_params(&self) -> SharedArray<Thingy> {
+        pub fn indirect_type_params(&self) -> SharedArray<Entity> {
             panic!();
         }
 
-        pub fn indirect_substitute_types(&self) -> SharedArray<Thingy> {
+        pub fn indirect_substitute_types(&self) -> SharedArray<Entity> {
             panic!();
         }
 
-        pub fn element_types(&self) -> SharedArray<Thingy> {
+        pub fn element_types(&self) -> SharedArray<Entity> {
             panic!();
         }
 
@@ -732,17 +730,17 @@ smodel! {
             panic!();
         }
 
-        pub fn result_type(&self) -> Thingy {
+        pub fn result_type(&self) -> Entity {
             panic!();
         }
 
-        pub fn base(&self) -> Thingy {
+        pub fn base(&self) -> Entity {
             panic!();
         }
 
         /// Performs type substitution.
-        pub fn type_substitution(&self, host: &Database, type_params: &SharedArray<Thingy>, substitute_types: &SharedArray<Thingy>) -> Thingy {
-            TypeSubstitution(host).exec(self, type_params, substitute_types)
+        pub fn apply_type(&self, host: &Database, type_params: &SharedArray<Entity>, substitute_types: &SharedArray<Entity>) -> Entity {
+            ApplyType(host).exec(self, type_params, substitute_types)
         }
 
         pub fn read_only(&self, host: &Database) -> bool {
@@ -765,19 +763,19 @@ smodel! {
             false
         }
 
-        pub fn var_constant(&self) -> Option<Thingy> {
+        pub fn var_constant(&self) -> Option<Entity> {
             panic!();
         }
 
-        pub fn set_var_constant(&self, k: Option<Thingy>) {
+        pub fn set_var_constant(&self, k: Option<Entity>) {
             panic!();
         }
 
-        pub fn is_ascending_type_of(&self, possibly_subtype: &Thingy, host: &Database) -> Result<bool, DeferError> {
+        pub fn is_ascending_type_of(&self, possibly_subtype: &Entity, host: &Database) -> Result<bool, DeferError> {
             possibly_subtype.is_subtype_of(self, host)
         }
     
-        pub fn is_subtype_of(&self, possibly_ascending_type: &Thingy, host: &Database) -> Result<bool, DeferError> {
+        pub fn is_subtype_of(&self, possibly_ascending_type: &Entity, host: &Database) -> Result<bool, DeferError> {
             if possibly_ascending_type.is::<AnyType>() {
                 return Ok(true);
             }
@@ -792,21 +790,21 @@ smodel! {
             Ok(false)
         }
     
-        pub fn is_equals_or_subtype_of(&self, other: &Thingy, host: &Database) -> Result<bool, DeferError> {
+        pub fn is_equals_or_subtype_of(&self, other: &Entity, host: &Database) -> Result<bool, DeferError> {
             Ok(self == other || self.is_subtype_of(other, host)?)
         }
     
         /// Returns all ascending types of a type in ascending type order,
         /// each possibly unresolved.
-        pub fn all_ascending_types(&self, host: &Database) -> Vec<Thingy> {
+        pub fn all_ascending_types(&self, host: &Database) -> Vec<Entity> {
             self.all_ascending_types_non_circular(host, self)
         }
 
-        fn all_ascending_types_non_circular(&self, host: &Database, descending_most: &Thingy) -> Vec<Thingy> {
+        fn all_ascending_types_non_circular(&self, host: &Database, descending_most: &Entity) -> Vec<Entity> {
             let mut r = vec![];
             let mut r2 = vec![];
             for type_thing in self.direct_ascending_types(host) {
-                if !type_thing.is::<UnresolvedThingy>() {
+                if !type_thing.is::<UnresolvedEntity>() {
                     if &type_thing != descending_most {
                         for type1 in type_thing.all_ascending_types(host) {
                             if !r.contains(&type1) && &type1 != descending_most {
@@ -824,9 +822,9 @@ smodel! {
         }
     
         /// Returns direct ascending types of a type, each possibly unresolved.
-        pub fn direct_ascending_types(&self, host: &Database) -> Vec<Thingy> {
+        pub fn direct_ascending_types(&self, host: &Database) -> Vec<Entity> {
             if self.is::<ClassType>() {
-                let mut r: Vec<Thingy> = self.implements(host).iter().collect();
+                let mut r: Vec<Entity> = self.implements(host).iter().collect();
                 if let Some(ascending_class) = self.extends_class(host) {
                     r.push(ascending_class);
                 }
@@ -838,14 +836,14 @@ smodel! {
             } else if self.is::<FunctionType>() {
                 return vec![host.function_type()];
             } else if self.is::<TupleType>() {
-                return vec![host.array_type_of_any().unwrap_or(host.unresolved_thingy())];
-            } else if self.is::<InvalidationThingy>() {
+                return vec![host.array_type_of_any().unwrap_or(host.unresolved_entity())];
+            } else if self.is::<InvalidationEntity>() {
                 return vec![];
             }
             return vec![];
         }
     
-        pub(crate) fn not_overriden_abstract_getter(&self, getter_from_base_class: &Thingy, subclass: &Thingy, host: &Database) -> bool {
+        pub(crate) fn not_overriden_abstract_getter(&self, getter_from_base_class: &Entity, subclass: &Entity, host: &Database) -> bool {
             if getter_from_base_class.is_abstract() {
                 let name = &getter_from_base_class.name();
                 let prop2 = if name.namespace().is::<SystemNamespace>() {
@@ -859,7 +857,7 @@ smodel! {
             }
         }
     
-        pub(crate) fn not_overriden_abstract_setter(&self, setter_from_base_class: &Thingy, subclass: &Thingy, host: &Database) -> bool {
+        pub(crate) fn not_overriden_abstract_setter(&self, setter_from_base_class: &Entity, subclass: &Entity, host: &Database) -> bool {
             if setter_from_base_class.is_abstract() {
                 let name = &setter_from_base_class.name();
                 let prop2 = if name.namespace().is::<SystemNamespace>() {
@@ -873,7 +871,7 @@ smodel! {
             }
         }
 
-        pub fn is_comparison_between_unrelated_types(&self, other: &Thingy, host: &Database) -> Result<bool, DeferError> {
+        pub fn is_comparison_between_unrelated_types(&self, other: &Entity, host: &Database) -> Result<bool, DeferError> {
             let left = self.escape_of_nullable_or_non_nullable();
             let right = other.escape_of_nullable_or_non_nullable();
 
@@ -894,7 +892,7 @@ smodel! {
             Ok(false)
         }
 
-        pub fn expect_type(&self) -> Result<Thingy, TypeExpectError> {
+        pub fn expect_type(&self) -> Result<Entity, TypeExpectError> {
             if let Some(t) = self.as_type() {
                 Ok(t)
             } else {
@@ -902,7 +900,7 @@ smodel! {
             }
         }
 
-        pub fn as_type(&self) -> Option<Thingy> {
+        pub fn as_type(&self) -> Option<Entity> {
             if self.is::<TypeConstant>() {
                 return Some(self.referenced_type());
             }
@@ -912,7 +910,7 @@ smodel! {
             if self.is::<Type>() { Some(self.clone()) } else { None }
         }
         
-        pub fn fixture_reference_value_equals(&self, other: &Thingy) -> bool {
+        pub fn fixture_reference_value_equals(&self, other: &Entity) -> bool {
             if other.is::<FixtureReferenceValue>() {
                 if self.is::<FixtureReferenceValue>() {
                     self.property() == other.property()
@@ -931,16 +929,16 @@ smodel! {
         }
 
         /// Lookups property in an object.
-        pub fn lookup_in_object(&self, host: &Database, open_ns_set: &SharedArray<Thingy>, qual: Option<Thingy>, key: &PropertyLookupKey) -> Result<Option<Thingy>, PropertyLookupError> {
+        pub fn lookup_in_object(&self, host: &Database, open_ns_set: &SharedArray<Entity>, qual: Option<Entity>, key: &PropertyLookupKey) -> Result<Option<Entity>, PropertyLookupError> {
             PropertyLookup(host).lookup_in_object(self, open_ns_set, qual, key)
         }
 
         /// Lookups property in the scope chain.
-        pub fn lookup_in_scope_chain(&self, host: &Database, qual: Option<Thingy>, key: &PropertyLookupKey) -> Result<Option<Thingy>, PropertyLookupError> {
+        pub fn lookup_in_scope_chain(&self, host: &Database, qual: Option<Entity>, key: &PropertyLookupKey) -> Result<Option<Entity>, PropertyLookupError> {
             PropertyLookup(host).lookup_in_scope_chain(self, qual, key)
         }
 
-        pub fn search_system_ns_in_scope_chain(&self, ns: SystemNamespaceKind) -> Option<Thingy> {
+        pub fn search_system_ns_in_scope_chain(&self, ns: SystemNamespaceKind) -> Option<Entity> {
             let mut scope = Some(self.clone());
             while let Some(scope1) = scope {
                 if scope1.is::<PackageScope>() || scope1.is::<Activation>() {
@@ -970,31 +968,31 @@ smodel! {
             None
         }
 
-        pub fn field_reference(&self) -> Option<Thingy> {
+        pub fn field_reference(&self) -> Option<Entity> {
             panic!();
         }
 
-        pub fn set_field_reference(&self, value: Option<Thingy>) {
+        pub fn set_field_reference(&self, value: Option<Entity>) {
             panic!();
         }
 
-        pub fn var_slot(&self) -> Option<Thingy> {
+        pub fn var_slot(&self) -> Option<Entity> {
             panic!();
         }
 
-        pub fn set_var_slot(&self, value: Option<Thingy>) {
+        pub fn set_var_slot(&self, value: Option<Entity>) {
             panic!();
         }
 
-        pub fn target_reference(&self) -> Option<Thingy> {
+        pub fn target_reference(&self) -> Option<Entity> {
             panic!();
         }
 
-        pub fn set_target_reference(&self, value: Option<Thingy>) {
+        pub fn set_target_reference(&self, value: Option<Entity>) {
             panic!();
         }
 
-        pub fn search_hoist_scope(&self) -> Thingy {
+        pub fn search_hoist_scope(&self) -> Entity {
             let mut scope = Some(self.clone());
             while let Some(scope1) = scope {
                 if scope1.is::<FixtureScope>() || scope1.is::<Activation>() {
@@ -1029,8 +1027,8 @@ smodel! {
             true
         }
 
-        pub fn list_packages_recursively(&self) -> Vec<Thingy> {
-            let mut r: Vec<Thingy> = vec![self.clone()];
+        pub fn list_packages_recursively(&self) -> Vec<Entity> {
+            let mut r: Vec<Entity> = vec![self.clone()];
             for (_, pckg) in self.subpackages().borrow().iter() {
                 r.extend(pckg.list_packages_recursively());
             }
@@ -1042,24 +1040,24 @@ smodel! {
         }
     }
 
-    pub struct UnresolvedThingy: Thingy {
-        pub(crate) fn UnresolvedThingy() {
+    pub struct UnresolvedEntity: Entity {
+        pub(crate) fn UnresolvedEntity() {
             super();
         }
     }
 
-    /// Thingy used to indicate that an entity is invalidated.
-    pub struct InvalidationThingy: Thingy {
-        pub(crate) fn InvalidationThingy() {
+    /// Entity used to indicate that an entity is invalidated.
+    pub struct InvalidationEntity: Entity {
+        pub(crate) fn InvalidationEntity() {
             super();
         }
 
         #[inheritdoc]
-        pub override fn property_static_type(&self, host: &Database) -> Thingy {
+        pub override fn property_static_type(&self, host: &Database) -> Entity {
             self.clone().into()
         }
 
-        pub override fn static_type(&self, host: &Database) -> Thingy {
+        pub override fn static_type(&self, host: &Database) -> Entity {
             self.clone().into()
         }
 
@@ -1076,13 +1074,13 @@ smodel! {
         }
     }
 
-    pub struct Namespace: Thingy {
+    pub struct Namespace: Entity {
         pub(crate) fn Namespace() {
             super();
         }
 
         #[inheritdoc]
-        pub override fn property_static_type(&self, host: &Database) -> Thingy {
+        pub override fn property_static_type(&self, host: &Database) -> Entity {
             host.namespace_type()
         }
 
@@ -1093,9 +1091,9 @@ smodel! {
 
     pub struct SystemNamespace: Namespace {
         let m_kind: SystemNamespaceKind = SystemNamespaceKind::Public;
-        let ref m_parent: Option<Thingy> = None;
+        let ref m_parent: Option<Entity> = None;
 
-        pub(crate) fn SystemNamespace(kind: SystemNamespaceKind, parent: Option<Thingy>) {
+        pub(crate) fn SystemNamespace(kind: SystemNamespaceKind, parent: Option<Entity>) {
             super();
             self.set_m_kind(kind);
             self.set_m_parent(parent);
@@ -1125,7 +1123,7 @@ smodel! {
             self.m_kind() == SystemNamespaceKind::StaticProtected
         }
 
-        pub override fn parent(&self) -> Option<Thingy> {
+        pub override fn parent(&self) -> Option<Entity> {
             self.m_parent()
         }
 
@@ -1172,15 +1170,15 @@ smodel! {
 
     /// A package consists of a local name, two namespaces, `public` and `internal`,
     /// and a mapping of subpackages.
-    pub struct Package: Thingy {
+    pub struct Package: Entity {
         let ref m_name: String = "".into();
-        let ref m_parent: Option<Thingy> = None;
-        let ref m_public_ns: Option<Thingy> = None;
-        let ref m_internal_ns: Option<Thingy> = None;
-        let ref m_properties: NameMap = NameMap::new();
-        let ref m_subpackages: SharedMap<String, Thingy> = SharedMap::new();
-        let ref m_package_concats: SharedArray<Thingy> = SharedArray::new();
-        let ref m_asdoc: Option<Rc<AsDoc>> = None;
+        let ref m_parent: Option<Entity> = None;
+        let ref m_public_ns: Option<Entity> = None;
+        let ref m_internal_ns: Option<Entity> = None;
+        let ref m_properties: Names = Names::new();
+        let ref m_subpackages: SharedMap<String, Entity> = SharedMap::new();
+        let ref m_package_concats: SharedArray<Entity> = SharedArray::new();
+        let ref m_asdoc: Option<Rc<Asdoc>> = None;
 
         pub(crate) fn Package(name: String) {
             super();
@@ -1193,48 +1191,48 @@ smodel! {
             self.m_name()
         }
 
-        pub override fn parent(&self) -> Option<Thingy> {
+        pub override fn parent(&self) -> Option<Entity> {
             self.m_parent()
         }
 
-        pub override fn set_parent(&self, p: Option<Thingy>) {
+        pub override fn set_parent(&self, p: Option<Entity>) {
             self.set_m_parent(p);
         }
 
         /// Concatenated packages.
-        pub override fn package_concats(&self) -> SharedArray<Thingy> {
+        pub override fn package_concats(&self) -> SharedArray<Entity> {
             self.m_package_concats()
         }
 
-        pub override fn public_ns(&self) -> Option<Thingy> {
+        pub override fn public_ns(&self) -> Option<Entity> {
             self.m_public_ns()
         }
 
-        pub override fn set_public_ns(&self, ns: Option<Thingy>) {
+        pub override fn set_public_ns(&self, ns: Option<Entity>) {
             self.set_m_public_ns(ns);
         }
 
-        pub override fn internal_ns(&self) -> Option<Thingy> {
+        pub override fn internal_ns(&self) -> Option<Entity> {
             self.m_internal_ns()
         }
 
-        pub override fn set_internal_ns(&self, ns: Option<Thingy>) {
+        pub override fn set_internal_ns(&self, ns: Option<Entity>) {
             self.set_m_internal_ns(ns);
         }
 
-        pub override fn properties(&self, host: &Database) -> NameMap {
+        pub override fn properties(&self, host: &Database) -> Names {
             self.m_properties()
         }
 
-        pub override fn subpackages(&self) -> SharedMap<String, Thingy> {
+        pub override fn subpackages(&self) -> SharedMap<String, Entity> {
             self.m_subpackages()
         }
 
-        pub override fn asdoc(&self) -> Option<Rc<AsDoc>> {
+        pub override fn asdoc(&self) -> Option<Rc<Asdoc>> {
             self.m_asdoc()
         }
 
-        pub override fn set_asdoc(&self, asdoc: Option<Rc<AsDoc>>) {
+        pub override fn set_asdoc(&self, asdoc: Option<Rc<Asdoc>>) {
             self.set_m_asdoc(asdoc);
         }
 
@@ -1243,13 +1241,13 @@ smodel! {
         }
     }
 
-    pub struct Alias: Thingy {
+    pub struct Alias: Entity {
         let ref m_name: Option<QName> = None;
-        let ref m_alias_of: Option<Thingy> = None;
-        let ref m_parent: Option<Thingy> = None;
+        let ref m_alias_of: Option<Entity> = None;
+        let ref m_parent: Option<Entity> = None;
         let ref m_location: Option<Location> = None;
 
-        pub(crate) fn Alias(name: QName, alias_of: Thingy) {
+        pub(crate) fn Alias(name: QName, alias_of: Entity) {
             super();
             self.set_m_name(Some(name));
             self.set_m_alias_of(Some(alias_of));
@@ -1259,11 +1257,11 @@ smodel! {
             self.m_name().unwrap()
         }
 
-        pub override fn alias_of(&self) -> Thingy {
+        pub override fn alias_of(&self) -> Entity {
             self.m_alias_of().unwrap()
         }
 
-        pub override fn set_alias_of(&self, value: &Thingy) {
+        pub override fn set_alias_of(&self, value: &Entity) {
             self.set_m_alias_of(Some(value.clone()));
         }
 
@@ -1275,15 +1273,15 @@ smodel! {
             self.set_m_location(loc);
         }
 
-        pub override fn resolve_alias(&self) -> Thingy {
+        pub override fn resolve_alias(&self) -> Entity {
             self.alias_of().resolve_alias()
         }
 
-        pub override fn parent(&self) -> Option<Thingy> {
+        pub override fn parent(&self) -> Option<Entity> {
             self.m_parent()
         }
 
-        pub override fn set_parent(&self, p: Option<Thingy>) {
+        pub override fn set_parent(&self, p: Option<Entity>) {
             self.set_m_parent(p);
         }
 
@@ -1292,7 +1290,7 @@ smodel! {
         }
     }
 
-    pub struct Type: Thingy {
+    pub struct Type: Entity {
         pub override fn includes_undefined(&self, host: &Database) -> Result<bool, DeferError> {
             Ok(true)
         }
@@ -1302,23 +1300,23 @@ smodel! {
         }
 
         #[inheritdoc]
-        pub override fn property_static_type(&self, host: &Database) -> Thingy {
+        pub override fn property_static_type(&self, host: &Database) -> Entity {
             host.class_type()
         }
 
-        pub override fn type_default_value(&self, host: &Database) -> Result<Option<Thingy>, DeferError> {
+        pub override fn type_default_value(&self, host: &Database) -> Result<Option<Entity>, DeferError> {
             if self.includes_undefined(host)? {
                 Ok(Some(host.factory().create_undefined_constant(self)))
             } else if self.includes_null(host)? {
                 Ok(Some(host.factory().create_null_constant(self)))
             } else if host.numeric_types()?.contains(self) {
                 if host.floating_point_types()?.contains(self) {
-                    let v = NumberVariant::nan(self, host);
+                    let v = Number::nan(self, host);
                     return Ok(Some(host.factory().create_number_constant(v, self)));
                 }
-                let v = NumberVariant::zero(self, host);
+                let v = Number::zero(self, host);
                 Ok(Some(host.factory().create_number_constant(v, self)))
-            } else if <Type as Into<Thingy>>::into(self.clone()) == host.boolean_type().defer()? {
+            } else if <Type as Into<Entity>>::into(self.clone()) == host.boolean_type().defer()? {
                 Ok(Some(host.factory().create_boolean_constant(false, self)))
             } else {
                 Ok(None)
@@ -1365,19 +1363,19 @@ smodel! {
     pub struct ClassType: Type {
         let ref m_name: Option<QName> = None;
         let m_flags: ClassTypeFlags = ClassTypeFlags::empty();
-        let ref m_type_params: Option<SharedArray<Thingy>> = None;
-        let ref m_extends_class: Option<Thingy> = None;
-        let ref m_implements: SharedArray<Thingy> = SharedArray::new();
-        let ref m_known_subclasses: SharedArray<Thingy> = SharedArray::new();
-        let ref m_constructor_method: Option<Thingy> = None;
-        let ref m_parent: Option<Thingy> = None;
-        let ref m_private_ns: Option<Thingy> = None;
-        let ref m_protected_ns: Option<Thingy> = None;
-        let ref m_static_protected_ns: Option<Thingy> = None;
-        let ref m_properties: NameMap = NameMap::new();
-        let ref m_prototype: NameMap = NameMap::new();
+        let ref m_type_params: Option<SharedArray<Entity>> = None;
+        let ref m_extends_class: Option<Entity> = None;
+        let ref m_implements: SharedArray<Entity> = SharedArray::new();
+        let ref m_known_subclasses: SharedArray<Entity> = SharedArray::new();
+        let ref m_constructor_method: Option<Entity> = None;
+        let ref m_parent: Option<Entity> = None;
+        let ref m_private_ns: Option<Entity> = None;
+        let ref m_protected_ns: Option<Entity> = None;
+        let ref m_static_protected_ns: Option<Entity> = None;
+        let ref m_properties: Names = Names::new();
+        let ref m_prototype: Names = Names::new();
         let ref m_events: SharedMap<String, Event> = SharedMap::new();
-        let ref m_asdoc: Option<Rc<AsDoc>> = None;
+        let ref m_asdoc: Option<Rc<Asdoc>> = None;
         let ref m_metadata: SharedArray<Rc<Metadata>> = SharedArray::new();
         let ref m_location: Option<Location> = None;
 
@@ -1407,35 +1405,35 @@ smodel! {
             self.m_events()
         }
 
-        pub override fn private_ns(&self) -> Option<Thingy> {
+        pub override fn private_ns(&self) -> Option<Entity> {
             self.m_private_ns()
         }
 
-        pub override fn set_private_ns(&self, ns: Option<Thingy>) {
+        pub override fn set_private_ns(&self, ns: Option<Entity>) {
             self.set_m_private_ns(ns);
         }
 
-        pub override fn protected_ns(&self) -> Option<Thingy> {
+        pub override fn protected_ns(&self) -> Option<Entity> {
             self.m_protected_ns()
         }
 
-        pub override fn set_protected_ns(&self, ns: Option<Thingy>) {
+        pub override fn set_protected_ns(&self, ns: Option<Entity>) {
             self.set_m_protected_ns(ns);
         }
 
-        pub override fn static_protected_ns(&self) -> Option<Thingy> {
+        pub override fn static_protected_ns(&self) -> Option<Entity> {
             self.m_static_protected_ns()
         }
 
-        pub override fn set_static_protected_ns(&self, ns: Option<Thingy>) {
+        pub override fn set_static_protected_ns(&self, ns: Option<Entity>) {
             self.set_m_static_protected_ns(ns);
         }
 
-        pub override fn type_params(&self) -> Option<SharedArray<Thingy>> {
+        pub override fn type_params(&self) -> Option<SharedArray<Entity>> {
             self.m_type_params()
         }
 
-        pub override fn set_type_params(&self, list: Option<SharedArray<Thingy>>) {
+        pub override fn set_type_params(&self, list: Option<SharedArray<Entity>>) {
             self.set_m_type_params(list);
         }
 
@@ -1501,53 +1499,53 @@ smodel! {
             self.set_m_flags(v);
         }
 
-        pub override fn known_subclasses(&self) -> SharedArray<Thingy> {
+        pub override fn known_subclasses(&self) -> SharedArray<Entity> {
             self.m_known_subclasses()
         }
 
         #[inheritdoc]
-        pub override fn implements(&self, host: &Database) -> SharedArray<Thingy> {
+        pub override fn implements(&self, host: &Database) -> SharedArray<Entity> {
             self.m_implements()
         }
 
         #[inheritdoc]
-        pub override fn extends_class(&self, host: &Database) -> Option<Thingy> {
+        pub override fn extends_class(&self, host: &Database) -> Option<Entity> {
             self.m_extends_class()
         }
 
-        pub override fn set_extends_class(&self, entity: Option<Thingy>) {
+        pub override fn set_extends_class(&self, entity: Option<Entity>) {
             self.set_m_extends_class(entity);
         }
 
-        pub override fn properties(&self, host: &Database) -> NameMap {
+        pub override fn properties(&self, host: &Database) -> Names {
             self.m_properties()
         }
 
-        pub override fn prototype(&self, host: &Database) -> NameMap {
+        pub override fn prototype(&self, host: &Database) -> Names {
             self.m_prototype()
         }
 
-        pub override fn constructor_method(&self, host: &Database) -> Option<Thingy> {
+        pub override fn constructor_method(&self, host: &Database) -> Option<Entity> {
             self.m_constructor_method()
         }
 
-        pub override fn set_constructor_method(&self, m: Option<Thingy>) {
+        pub override fn set_constructor_method(&self, m: Option<Entity>) {
             self.set_m_constructor_method(m);
         }
 
-        pub override fn parent(&self) -> Option<Thingy> {
+        pub override fn parent(&self) -> Option<Entity> {
             self.m_parent()
         }
 
-        pub override fn set_parent(&self, p: Option<Thingy>) {
+        pub override fn set_parent(&self, p: Option<Entity>) {
             self.set_m_parent(p);
         }
 
-        pub override fn asdoc(&self) -> Option<Rc<AsDoc>> {
+        pub override fn asdoc(&self) -> Option<Rc<Asdoc>> {
             self.m_asdoc()
         }
 
-        pub override fn set_asdoc(&self, asdoc: Option<Rc<AsDoc>>) {
+        pub override fn set_asdoc(&self, asdoc: Option<Rc<Asdoc>>) {
             self.set_m_asdoc(asdoc);
         }
 
@@ -1575,13 +1573,13 @@ smodel! {
     
     pub struct EnumType: Type {
         let ref m_name: Option<QName> = None;
-        let ref m_parent: Option<Thingy> = None;
-        let ref m_private_ns: Option<Thingy> = None;
-        let ref m_properties: NameMap = NameMap::new();
-        let ref m_prototype: NameMap = NameMap::new();
-        let ref m_number_mapping: SharedMap<String, NumberVariant> = SharedMap::new();
-        let ref m_slot_mapping: SharedMap<String, Thingy> = SharedMap::new();
-        let ref m_asdoc: Option<Rc<AsDoc>> = None;
+        let ref m_parent: Option<Entity> = None;
+        let ref m_private_ns: Option<Entity> = None;
+        let ref m_properties: Names = Names::new();
+        let ref m_prototype: Names = Names::new();
+        let ref m_number_mapping: SharedMap<String, Number> = SharedMap::new();
+        let ref m_slot_mapping: SharedMap<String, Entity> = SharedMap::new();
+        let ref m_asdoc: Option<Rc<Asdoc>> = None;
         let ref m_metadata: SharedArray<Rc<Metadata>> = SharedArray::new();
         let ref m_location: Option<Location> = None;
 
@@ -1595,13 +1593,13 @@ smodel! {
         }
 
         /// Mapping from member's String to Number.
-        pub override fn enum_member_number_mapping(&self) -> SharedMap<String, NumberVariant> {
+        pub override fn enum_member_number_mapping(&self) -> SharedMap<String, Number> {
             self.m_number_mapping()
         }
 
         /// Mapping from member's String to the static variable slot
         /// used in `properties()`.
-        pub override fn enum_member_slot_mapping(&self) -> SharedMap<String, Thingy> {
+        pub override fn enum_member_slot_mapping(&self) -> SharedMap<String, Entity> {
             self.m_slot_mapping()
         }
 
@@ -1613,11 +1611,11 @@ smodel! {
             self.set_m_location(loc);
         }
 
-        pub override fn private_ns(&self) -> Option<Thingy> {
+        pub override fn private_ns(&self) -> Option<Entity> {
             self.m_private_ns()
         }
 
-        pub override fn set_private_ns(&self, ns: Option<Thingy>) {
+        pub override fn set_private_ns(&self, ns: Option<Entity>) {
             self.set_m_private_ns(ns);
         }
 
@@ -1638,31 +1636,31 @@ smodel! {
         }
 
         #[inheritdoc]
-        pub override fn extends_class(&self, host: &Database) -> Option<Thingy> {
+        pub override fn extends_class(&self, host: &Database) -> Option<Entity> {
             Some(host.object_type())
         }
 
-        pub override fn properties(&self, host: &Database) -> NameMap {
+        pub override fn properties(&self, host: &Database) -> Names {
             self.m_properties()
         }
 
-        pub override fn prototype(&self, host: &Database) -> NameMap {
+        pub override fn prototype(&self, host: &Database) -> Names {
             self.m_prototype()
         }
 
-        pub override fn parent(&self) -> Option<Thingy> {
+        pub override fn parent(&self) -> Option<Entity> {
             self.m_parent()
         }
 
-        pub override fn set_parent(&self, p: Option<Thingy>) {
+        pub override fn set_parent(&self, p: Option<Entity>) {
             self.set_m_parent(p);
         }
 
-        pub override fn asdoc(&self) -> Option<Rc<AsDoc>> {
+        pub override fn asdoc(&self) -> Option<Rc<Asdoc>> {
             self.m_asdoc()
         }
 
-        pub override fn set_asdoc(&self, asdoc: Option<Rc<AsDoc>>) {
+        pub override fn set_asdoc(&self, asdoc: Option<Rc<Asdoc>>) {
             self.set_m_asdoc(asdoc);
         }
 
@@ -1685,13 +1683,13 @@ smodel! {
 
     pub struct InterfaceType: Type {
         let ref m_name: Option<QName> = None;
-        let ref m_type_params: Option<SharedArray<Thingy>> = None;
+        let ref m_type_params: Option<SharedArray<Entity>> = None;
         let ref m_events: SharedMap<String, Event> = SharedMap::new();
-        let ref m_extends_interfaces: SharedArray<Thingy> = SharedArray::new();
-        let ref m_known_implementors: SharedArray<Thingy> = SharedArray::new();
-        let ref m_parent: Option<Thingy> = None;
-        let ref m_prototype: NameMap = NameMap::new();
-        let ref m_asdoc: Option<Rc<AsDoc>> = None;
+        let ref m_extends_interfaces: SharedArray<Entity> = SharedArray::new();
+        let ref m_known_implementors: SharedArray<Entity> = SharedArray::new();
+        let ref m_parent: Option<Entity> = None;
+        let ref m_prototype: Names = Names::new();
+        let ref m_asdoc: Option<Rc<Asdoc>> = None;
         let ref m_metadata: SharedArray<Rc<Metadata>> = SharedArray::new();
         let ref m_location: Option<Location> = None;
 
@@ -1716,11 +1714,11 @@ smodel! {
             self.set_m_location(loc);
         }
 
-        pub override fn type_params(&self) -> Option<SharedArray<Thingy>> {
+        pub override fn type_params(&self) -> Option<SharedArray<Entity>> {
             self.m_type_params()
         }
 
-        pub override fn set_type_params(&self, list: Option<SharedArray<Thingy>>) {
+        pub override fn set_type_params(&self, list: Option<SharedArray<Entity>>) {
             self.set_m_type_params(list);
         }
 
@@ -1729,32 +1727,32 @@ smodel! {
             self.m_events()
         }
 
-        pub override fn known_implementors(&self) -> SharedArray<Thingy> {
+        pub override fn known_implementors(&self) -> SharedArray<Entity> {
             self.m_known_implementors()
         }
 
         #[inheritdoc]
-        pub override fn extends_interfaces(&self, host: &Database) -> SharedArray<Thingy> {
+        pub override fn extends_interfaces(&self, host: &Database) -> SharedArray<Entity> {
             self.m_extends_interfaces()
         }
 
-        pub override fn prototype(&self, host: &Database) -> NameMap {
+        pub override fn prototype(&self, host: &Database) -> Names {
             self.m_prototype()
         }
 
-        pub override fn parent(&self) -> Option<Thingy> {
+        pub override fn parent(&self) -> Option<Entity> {
             self.m_parent()
         }
 
-        pub override fn set_parent(&self, p: Option<Thingy>) {
+        pub override fn set_parent(&self, p: Option<Entity>) {
             self.set_m_parent(p);
         }
 
-        pub override fn asdoc(&self) -> Option<Rc<AsDoc>> {
+        pub override fn asdoc(&self) -> Option<Rc<Asdoc>> {
             self.m_asdoc()
         }
 
-        pub override fn set_asdoc(&self, asdoc: Option<Rc<AsDoc>>) {
+        pub override fn set_asdoc(&self, asdoc: Option<Rc<Asdoc>>) {
             self.set_m_asdoc(asdoc);
         }
 
@@ -1785,16 +1783,16 @@ smodel! {
     /// such as structural types, are represented by their
     /// same type with substitution in compound parts.
     pub struct TypeAfterSubstitution: Type {
-        let ref m_origin: Option<Thingy> = None;
-        let ref m_substitute_types: SharedArray<Thingy> = SharedArray::new();
-        let ref m_extends_class: Option<Thingy> = None;
-        let ref m_implements: Option<SharedArray<Thingy>> = None;
-        let ref m_extends_interfaces: Option<SharedArray<Thingy>> = None;
-        let ref m_properties: Option<NameMap> = None;
-        let ref m_prototype: Option<NameMap> = None;
-        let ref m_constructor_method: Option<Thingy> = None;
+        let ref m_origin: Option<Entity> = None;
+        let ref m_substitute_types: SharedArray<Entity> = SharedArray::new();
+        let ref m_extends_class: Option<Entity> = None;
+        let ref m_implements: Option<SharedArray<Entity>> = None;
+        let ref m_extends_interfaces: Option<SharedArray<Entity>> = None;
+        let ref m_properties: Option<Names> = None;
+        let ref m_prototype: Option<Names> = None;
+        let ref m_constructor_method: Option<Entity> = None;
 
-        pub(crate) fn TypeAfterSubstitution(origin: Thingy, substitute_types: SharedArray<Thingy>) {
+        pub(crate) fn TypeAfterSubstitution(origin: Entity, substitute_types: SharedArray<Entity>) {
             super();
             self.set_m_origin(Some(origin));
             self.set_m_substitute_types(substitute_types);
@@ -1808,11 +1806,11 @@ smodel! {
             self.origin().is_interface_type_possibly_after_sub()
         }
 
-        pub override fn origin(&self) -> Thingy {
+        pub override fn origin(&self) -> Entity {
             self.m_origin().unwrap()
         }
 
-        pub override fn substitute_types(&self) -> SharedArray<Thingy> {
+        pub override fn substitute_types(&self) -> SharedArray<Entity> {
             self.m_substitute_types()
         }
         
@@ -1849,7 +1847,7 @@ smodel! {
         }
 
         #[inheritdoc]
-        pub override fn extends_class(&self, host: &Database) -> Option<Thingy> {
+        pub override fn extends_class(&self, host: &Database) -> Option<Entity> {
             if let Some(r) = self.m_extends_class() {
                 return Some(r.clone());
             }
@@ -1859,65 +1857,65 @@ smodel! {
                 return None;
             }
             let r = r.unwrap();
-            if r.is::<UnresolvedThingy>() {
+            if r.is::<UnresolvedEntity>() {
                 return Some(r.clone());
             }
-            let r = TypeSubstitution(host).exec(&r, &origin.type_params().unwrap(), &self.m_substitute_types());
+            let r = ApplyType(host).exec(&r, &origin.type_params().unwrap(), &self.m_substitute_types());
             self.set_m_extends_class(Some(r.clone()));
             Some(r)
         }
 
         #[inheritdoc]
-        pub override fn implements(&self, host: &Database) -> SharedArray<Thingy> {
+        pub override fn implements(&self, host: &Database) -> SharedArray<Entity> {
             if let Some(r) = self.m_implements() {
                 return r;
             }
             let origin = self.origin();
-            let r: SharedArray<Thingy> = origin.implements(host).iter().map(|t| TypeSubstitution(host).exec(&t, &origin.type_params().unwrap(), &self.m_substitute_types())).collect();
+            let r: SharedArray<Entity> = origin.implements(host).iter().map(|t| ApplyType(host).exec(&t, &origin.type_params().unwrap(), &self.m_substitute_types())).collect();
             self.set_m_implements(Some(r.clone()));
             r
         }
 
         #[inheritdoc]
-        pub override fn extends_interfaces(&self, host: &Database) -> SharedArray<Thingy> {
+        pub override fn extends_interfaces(&self, host: &Database) -> SharedArray<Entity> {
             if let Some(r) = self.m_extends_interfaces() {
                 return r;
             }
             let origin = self.origin();
-            let r: SharedArray<Thingy> = origin.extends_interfaces(host).iter().map(|t| TypeSubstitution(host).exec(&t, &origin.type_params().unwrap(), &self.m_substitute_types())).collect();
+            let r: SharedArray<Entity> = origin.extends_interfaces(host).iter().map(|t| ApplyType(host).exec(&t, &origin.type_params().unwrap(), &self.m_substitute_types())).collect();
             self.set_m_extends_interfaces(Some(r.clone()));
             r
         }
 
-        pub override fn prototype(&self, host: &Database) -> NameMap {
+        pub override fn prototype(&self, host: &Database) -> Names {
             if let Some(r) = self.m_prototype() {
                 return r;
             }
             let origin = self.origin();
-            let mut r = NameMap::new();
-            for (name, thingy) in origin.prototype(host).borrow().iter() {
-                let thingy = TypeSubstitution(host).exec(&thingy, &origin.type_params().unwrap(), &self.m_substitute_types());
-                r.set(name.clone(), thingy)
+            let mut r = Names::new();
+            for (name, entity) in origin.prototype(host).borrow().iter() {
+                let entity = ApplyType(host).exec(&entity, &origin.type_params().unwrap(), &self.m_substitute_types());
+                r.set(name.clone(), entity)
             }
             self.set_m_prototype(Some(r.clone()));
             r
         }
 
-        pub override fn properties(&self, host: &Database) -> NameMap {
+        pub override fn properties(&self, host: &Database) -> Names {
             if let Some(r) = self.m_properties() {
                 return r;
             }
             let origin = self.origin();
-            let mut r = NameMap::new();
-            for (name, thingy) in origin.properties(host).borrow().iter() {
-                let thingy = TypeSubstitution(host).exec(&thingy, &origin.type_params().unwrap(), &self.m_substitute_types());
-                r.set(name.clone(), thingy)
+            let mut r = Names::new();
+            for (name, entity) in origin.properties(host).borrow().iter() {
+                let entity = ApplyType(host).exec(&entity, &origin.type_params().unwrap(), &self.m_substitute_types());
+                r.set(name.clone(), entity)
             }
             self.set_m_properties(Some(r.clone()));
             r
         }
 
-        pub override fn constructor_method(&self, host: &Database) -> Option<Thingy> {
+        pub override fn constructor_method(&self, host: &Database) -> Option<Entity> {
             if let Some(r) = self.m_constructor_method() {
                 return Some(r.clone());
             }
@@ -1927,16 +1925,16 @@ smodel! {
                 return None;
             }
             let r = r.unwrap();
-            let r = TypeSubstitution(host).exec(&r, &origin.type_params().unwrap(), &self.m_substitute_types());
+            let r = ApplyType(host).exec(&r, &origin.type_params().unwrap(), &self.m_substitute_types());
             self.set_m_constructor_method(Some(r.clone()));
             Some(r)
         }
 
-        pub override fn parent(&self) -> Option<Thingy> {
+        pub override fn parent(&self) -> Option<Entity> {
             self.origin().parent()
         }
 
-        pub override fn asdoc(&self) -> Option<Rc<AsDoc>> {
+        pub override fn asdoc(&self) -> Option<Rc<Asdoc>> {
             self.origin().asdoc()
         }
 
@@ -1967,14 +1965,14 @@ smodel! {
     /// Tuple type. The tuple type is equivalent to
     /// `Array` with type safety for its element types.
     pub struct TupleType: Type {
-        let ref m_elements: SharedArray<Thingy> = SharedArray::new();
+        let ref m_elements: SharedArray<Entity> = SharedArray::new();
 
-        pub(crate) fn TupleType(elements: SharedArray<Thingy>) {
+        pub(crate) fn TupleType(elements: SharedArray<Entity>) {
             super();
             self.set_m_elements(elements);
         }
         
-        pub override fn element_types(&self) -> SharedArray<Thingy> {
+        pub override fn element_types(&self) -> SharedArray<Entity> {
             self.m_elements()
         }
 
@@ -1999,8 +1997,8 @@ smodel! {
         }
 
         #[inheritdoc]
-        pub override fn extends_class(&self, host: &Database) -> Option<Thingy> {
-            Some(host.array_type_of_any().unwrap_or(host.unresolved_thingy()))
+        pub override fn extends_class(&self, host: &Database) -> Option<Entity> {
+            Some(host.array_type_of_any().unwrap_or(host.unresolved_entity()))
         }
 
         pub override fn includes_undefined(&self, host: &Database) -> Result<bool, DeferError> {
@@ -2020,9 +2018,9 @@ smodel! {
     /// with type safety.
     pub struct FunctionType: Type {
         let ref m_params: SharedArray<Rc<SemanticFunctionTypeParameter>> = SharedArray::new();
-        let ref m_result_type: Option<Thingy> = None;
+        let ref m_result_type: Option<Entity> = None;
 
-        pub(crate) fn FunctionType(params: SharedArray<Rc<SemanticFunctionTypeParameter>>, result_type: Thingy) {
+        pub(crate) fn FunctionType(params: SharedArray<Rc<SemanticFunctionTypeParameter>>, result_type: Entity) {
             super();
             self.set_m_params(params);
             self.set_m_result_type(Some(result_type));
@@ -2032,7 +2030,7 @@ smodel! {
             self.m_params()
         }
 
-        pub override fn result_type(&self) -> Thingy {
+        pub override fn result_type(&self) -> Entity {
             self.m_result_type().unwrap()
         }
 
@@ -2057,7 +2055,7 @@ smodel! {
         }
 
         #[inheritdoc]
-        pub override fn extends_class(&self, host: &Database) -> Option<Thingy> {
+        pub override fn extends_class(&self, host: &Database) -> Option<Entity> {
             Some(host.function_type())
         }
 
@@ -2091,15 +2089,15 @@ smodel! {
     /// The nullable type `T?`. It is equivalent to either
     /// `T` or `*` (for all primitive types but String).
     pub struct NullableType: Type {
-        let ref m_base: Option<Thingy> = None;
+        let ref m_base: Option<Entity> = None;
 
-        pub(crate) fn NullableType(base: Thingy) {
+        pub(crate) fn NullableType(base: Entity) {
             super();
             self.set_m_base(Some(base));
         }
 
         /// The type that is made nullable.
-        pub override fn base(&self) -> Thingy {
+        pub override fn base(&self) -> Entity {
             self.m_base().unwrap()
         }
 
@@ -2112,11 +2110,11 @@ smodel! {
         }
 
         #[inheritdoc]
-        pub override fn escape_of_nullable(&self) -> Thingy {
+        pub override fn escape_of_nullable(&self) -> Entity {
             self.base()
         }
 
-        pub override fn escape_of_nullable_or_non_nullable(&self) -> Thingy {
+        pub override fn escape_of_nullable_or_non_nullable(&self) -> Entity {
             self.base()
         }
 
@@ -2130,15 +2128,15 @@ smodel! {
     }
 
     pub struct NonNullableType: Type {
-        let ref m_base: Option<Thingy> = None;
+        let ref m_base: Option<Entity> = None;
 
-        pub(crate) fn NonNullableType(base: Thingy) {
+        pub(crate) fn NonNullableType(base: Entity) {
             super();
             self.set_m_base(Some(base));
         }
 
         /// The type that is made non-nullable.
-        pub override fn base(&self) -> Thingy {
+        pub override fn base(&self) -> Entity {
             self.m_base().unwrap()
         }
 
@@ -2151,11 +2149,11 @@ smodel! {
         }
 
         #[inheritdoc]
-        pub override fn escape_of_non_nullable(&self) -> Thingy {
+        pub override fn escape_of_non_nullable(&self) -> Entity {
             self.base()
         }
 
-        pub override fn escape_of_nullable_or_non_nullable(&self) -> Thingy {
+        pub override fn escape_of_nullable_or_non_nullable(&self) -> Entity {
             self.base()
         }
 
@@ -2203,13 +2201,13 @@ smodel! {
     }
 
     /// Either an *original* variable slot, or a variable slot after substitution.
-    pub struct VariableSlot: Thingy {
+    pub struct VariableSlot: Entity {
         fn VariableSlot() {
             super();
         }
 
         #[inheritdoc]
-        pub override fn property_static_type(&self, host: &Database) -> Thingy {
+        pub override fn property_static_type(&self, host: &Database) -> Entity {
             self.static_type(host)
         }
     }
@@ -2217,15 +2215,15 @@ smodel! {
     pub struct OriginalVariableSlot: VariableSlot {
         let ref m_name: Option<QName> = None;
         let ref m_location: Option<Location> = None;
-        let ref m_asdoc: Option<Rc<AsDoc>> = None;
+        let ref m_asdoc: Option<Rc<Asdoc>> = None;
         let ref m_metadata: SharedArray<Rc<Metadata>> = SharedArray::new();
-        let ref m_constant: Option<Thingy> = None;
-        let ref m_static_type: Option<Thingy> = None;
-        let ref m_parent: Option<Thingy> = None;
+        let ref m_constant: Option<Entity> = None;
+        let ref m_static_type: Option<Entity> = None;
+        let ref m_parent: Option<Entity> = None;
         let m_flags: VariableSlotFlags = VariableSlotFlags::empty();
         let ref m_bindable_event: Option<String> = None;
 
-        pub(crate) fn OriginalVariableSlot(name: &QName, read_only: bool, static_type: &Thingy) {
+        pub(crate) fn OriginalVariableSlot(name: &QName, read_only: bool, static_type: &Entity) {
             super();
             self.set_m_name(Some(name.clone()));
             self.set_read_only(read_only);
@@ -2237,12 +2235,12 @@ smodel! {
         }
 
         /// The constant initially assigned to that variable slot.
-        pub override fn var_constant(&self) -> Option<Thingy> {
+        pub override fn var_constant(&self) -> Option<Entity> {
             self.m_constant()
         }
 
         /// The constant initially assigned to that variable slot.
-        pub override fn set_var_constant(&self, k: Option<Thingy>) {
+        pub override fn set_var_constant(&self, k: Option<Entity>) {
             self.set_m_constant(k);
         }
 
@@ -2260,11 +2258,11 @@ smodel! {
             false
         }
 
-        pub override fn static_type(&self, host: &Database) -> Thingy {
+        pub override fn static_type(&self, host: &Database) -> Entity {
             self.m_static_type().unwrap()
         }
 
-        pub override fn set_static_type(&self, value: Thingy) {
+        pub override fn set_static_type(&self, value: Entity) {
             self.set_m_static_type(Some(value));
         }
 
@@ -2285,19 +2283,19 @@ smodel! {
             self.set_m_bindable_event(name);
         }
 
-        pub override fn parent(&self) -> Option<Thingy> {
+        pub override fn parent(&self) -> Option<Entity> {
             self.m_parent()
         }
 
-        pub override fn set_parent(&self, p: Option<Thingy>) {
+        pub override fn set_parent(&self, p: Option<Entity>) {
             self.set_m_parent(p);
         }
 
-        pub override fn asdoc(&self) -> Option<Rc<AsDoc>> {
+        pub override fn asdoc(&self) -> Option<Rc<Asdoc>> {
             self.m_asdoc()
         }
 
-        pub override fn set_asdoc(&self, asdoc: Option<Rc<AsDoc>>) {
+        pub override fn set_asdoc(&self, asdoc: Option<Rc<Asdoc>>) {
             self.set_m_asdoc(asdoc);
         }
 
@@ -2312,27 +2310,27 @@ smodel! {
 
     /// Variable slot after indirect substitution.
     pub struct VariableSlotAfterSubstitution: VariableSlot {
-        let ref m_origin: Option<Thingy> = None;
-        let ref m_indirect_type_params: SharedArray<Thingy> = SharedArray::new();
-        let ref m_indirect_substitute_types: SharedArray<Thingy> = SharedArray::new();
-        let ref m_static_type: Option<Thingy> = None;
+        let ref m_origin: Option<Entity> = None;
+        let ref m_indirect_type_params: SharedArray<Entity> = SharedArray::new();
+        let ref m_indirect_substitute_types: SharedArray<Entity> = SharedArray::new();
+        let ref m_static_type: Option<Entity> = None;
 
-        pub(crate) fn VariableSlotAfterSubstitution(origin: &Thingy, indirect_type_params: &SharedArray<Thingy>, indirect_substitute_types: &SharedArray<Thingy>) {
+        pub(crate) fn VariableSlotAfterSubstitution(origin: &Entity, indirect_type_params: &SharedArray<Entity>, indirect_substitute_types: &SharedArray<Entity>) {
             super();
             self.set_m_origin(Some(origin.clone()));
             self.set_m_indirect_type_params(indirect_type_params.clone());
             self.set_m_indirect_substitute_types(indirect_substitute_types.clone());
         }
 
-        pub override fn origin(&self) -> Thingy {
+        pub override fn origin(&self) -> Entity {
             self.m_origin().unwrap()
         }
 
-        pub override fn indirect_type_params(&self) -> SharedArray<Thingy> {
+        pub override fn indirect_type_params(&self) -> SharedArray<Entity> {
             self.m_indirect_type_params()
         }
 
-        pub override fn indirect_substitute_types(&self) -> SharedArray<Thingy> {
+        pub override fn indirect_substitute_types(&self) -> SharedArray<Entity> {
             self.m_indirect_substitute_types()
         }
 
@@ -2341,7 +2339,7 @@ smodel! {
         }
 
         /// The constant initially assigned to that variable slot.
-        pub override fn var_constant(&self) -> Option<Thingy> {
+        pub override fn var_constant(&self) -> Option<Entity> {
             None
         }
 
@@ -2353,15 +2351,15 @@ smodel! {
             false
         }
 
-        pub override fn static_type(&self, host: &Database) -> Thingy {
+        pub override fn static_type(&self, host: &Database) -> Entity {
             if let Some(r) = self.m_static_type() {
                 return r.clone();
             }
             let r = self.origin().static_type(host);
-            if r.is::<UnresolvedThingy>() {
+            if r.is::<UnresolvedEntity>() {
                 return r.clone();
             }
-            let r = TypeSubstitution(host).exec(&r, &self.m_indirect_type_params(), &self.m_indirect_substitute_types());
+            let r = ApplyType(host).exec(&r, &self.m_indirect_type_params(), &self.m_indirect_substitute_types());
             self.set_m_static_type(Some(r.clone()));
             r
         }
@@ -2375,11 +2373,11 @@ smodel! {
             self.origin().bindable_event()
         }
 
-        pub override fn parent(&self) -> Option<Thingy> {
+        pub override fn parent(&self) -> Option<Entity> {
             self.origin().parent()
         }
 
-        pub override fn asdoc(&self) -> Option<Rc<AsDoc>> {
+        pub override fn asdoc(&self) -> Option<Rc<Asdoc>> {
             self.origin().asdoc()
         }
 
@@ -2393,13 +2391,13 @@ smodel! {
     }
 
     /// Either an *original* virtual slot, or a virtual slot after substitution.
-    pub struct VirtualSlot: Thingy {
+    pub struct VirtualSlot: Entity {
         fn VirtualSlot() {
             super();
         }
 
         #[inheritdoc]
-        pub override fn property_static_type(&self, host: &Database) -> Thingy {
+        pub override fn property_static_type(&self, host: &Database) -> Entity {
             self.static_type(host)
         }
     }
@@ -2407,11 +2405,11 @@ smodel! {
     pub struct OriginalVirtualSlot: VirtualSlot {
         let ref m_name: Option<QName> = None;
         let ref m_location: Option<Location> = None;
-        let ref m_asdoc: Option<Rc<AsDoc>> = None;
-        let ref m_getter: Option<Thingy> = None;
-        let ref m_setter: Option<Thingy> = None;
-        let ref m_static_type: Option<Thingy> = None;
-        let ref m_parent: Option<Thingy> = None;
+        let ref m_asdoc: Option<Rc<Asdoc>> = None;
+        let ref m_getter: Option<Entity> = None;
+        let ref m_setter: Option<Entity> = None;
+        let ref m_static_type: Option<Entity> = None;
+        let ref m_parent: Option<Entity> = None;
         let m_flags: VirtualSlotFlags = VirtualSlotFlags::empty();
         let ref m_bindable_event: Option<String> = None;
 
@@ -2424,19 +2422,19 @@ smodel! {
             self.m_name().unwrap()
         }
 
-        pub override fn getter(&self, host: &Database) -> Option<Thingy> {
+        pub override fn getter(&self, host: &Database) -> Option<Entity> {
             self.m_getter()
         }
 
-        pub override fn set_getter(&self, m: Option<Thingy>) {
+        pub override fn set_getter(&self, m: Option<Entity>) {
             self.set_m_getter(m);
         }
 
-        pub override fn setter(&self, host: &Database) -> Option<Thingy> {
+        pub override fn setter(&self, host: &Database) -> Option<Entity> {
             self.m_setter()
         }
 
-        pub override fn set_setter(&self, m: Option<Thingy>) {
+        pub override fn set_setter(&self, m: Option<Entity>) {
             self.set_m_setter(m);
         }
 
@@ -2448,31 +2446,31 @@ smodel! {
             self.getter(host).is_none()
         }
 
-        pub override fn static_type(&self, host: &Database) -> Thingy {
+        pub override fn static_type(&self, host: &Database) -> Entity {
             if let Some(r) = self.m_static_type() {
                 return r.clone();
             }
 
-            let mut deduced_type: Option<Thingy> = None;
+            let mut deduced_type: Option<Entity> = None;
 
             // Deduce type from getter
             if let Some(getter) = self.m_getter() {
-                let signature: Thingy = getter.signature(host);
-                if !signature.is::<UnresolvedThingy>() {
+                let signature: Entity = getter.signature(host);
+                if !signature.is::<UnresolvedEntity>() {
                     deduced_type = Some(signature.result_type());
                 }
             }
 
             // Deduce type from setter
             if let Some(setter) = self.m_setter() {
-                let signature: Thingy = setter.signature(host);
-                if !signature.is::<UnresolvedThingy>() {
+                let signature: Entity = setter.signature(host);
+                if !signature.is::<UnresolvedEntity>() {
                     deduced_type = Some(signature.params().get(0).unwrap().static_type.clone());
                 }
             }
 
             if deduced_type.is_none() {
-                return host.unresolved_thingy();
+                return host.unresolved_entity();
             }
 
             self.set_m_static_type(deduced_type.clone());
@@ -2496,19 +2494,19 @@ smodel! {
             self.set_m_bindable_event(name);
         }
 
-        pub override fn parent(&self) -> Option<Thingy> {
+        pub override fn parent(&self) -> Option<Entity> {
             self.m_parent()
         }
 
-        pub override fn set_parent(&self, p: Option<Thingy>) {
+        pub override fn set_parent(&self, p: Option<Entity>) {
             self.set_m_parent(p);
         }
 
-        pub override fn asdoc(&self) -> Option<Rc<AsDoc>> {
+        pub override fn asdoc(&self) -> Option<Rc<Asdoc>> {
             self.m_asdoc()
         }
 
-        pub override fn set_asdoc(&self, asdoc: Option<Rc<AsDoc>>) {
+        pub override fn set_asdoc(&self, asdoc: Option<Rc<Asdoc>>) {
             self.set_m_asdoc(asdoc);
         }
 
@@ -2518,14 +2516,14 @@ smodel! {
     }
 
     pub struct VirtualSlotAfterSubstitution: VirtualSlot {
-        let ref m_origin: Option<Thingy> = None;
-        let ref m_indirect_type_params: SharedArray<Thingy> = SharedArray::new();
-        let ref m_indirect_substitute_types: SharedArray<Thingy> = SharedArray::new();
-        let ref m_getter: Option<Thingy> = None;
-        let ref m_setter: Option<Thingy> = None;
-        let ref m_static_type: Option<Thingy> = None;
+        let ref m_origin: Option<Entity> = None;
+        let ref m_indirect_type_params: SharedArray<Entity> = SharedArray::new();
+        let ref m_indirect_substitute_types: SharedArray<Entity> = SharedArray::new();
+        let ref m_getter: Option<Entity> = None;
+        let ref m_setter: Option<Entity> = None;
+        let ref m_static_type: Option<Entity> = None;
 
-        pub(crate) fn VirtualSlotAfterSubstitution(origin: &Thingy, indirect_type_params: &SharedArray<Thingy>, indirect_substitute_types: &SharedArray<Thingy>) {
+        pub(crate) fn VirtualSlotAfterSubstitution(origin: &Entity, indirect_type_params: &SharedArray<Entity>, indirect_substitute_types: &SharedArray<Entity>) {
             super();
             self.set_m_origin(Some(origin.clone()));
             self.set_m_indirect_type_params(indirect_type_params.clone());
@@ -2536,15 +2534,15 @@ smodel! {
             None
         }
 
-        pub override fn origin(&self) -> Thingy {
+        pub override fn origin(&self) -> Entity {
             self.m_origin().unwrap()
         }
 
-        pub override fn indirect_type_params(&self) -> SharedArray<Thingy> {
+        pub override fn indirect_type_params(&self) -> SharedArray<Entity> {
             self.m_indirect_type_params()
         }
 
-        pub override fn indirect_substitute_types(&self) -> SharedArray<Thingy> {
+        pub override fn indirect_substitute_types(&self) -> SharedArray<Entity> {
             self.m_indirect_substitute_types()
         }
 
@@ -2552,7 +2550,7 @@ smodel! {
             self.origin().name()
         }
 
-        pub override fn getter(&self, host: &Database) -> Option<Thingy> {
+        pub override fn getter(&self, host: &Database) -> Option<Entity> {
             if let Some(r) = self.m_getter() {
                 return Some(r);
             }
@@ -2560,12 +2558,12 @@ smodel! {
             if r.is_none() {
                 return r;
             }
-            let r = TypeSubstitution(host).exec(&r.unwrap(), &self.indirect_type_params(), &self.indirect_substitute_types());
+            let r = ApplyType(host).exec(&r.unwrap(), &self.indirect_type_params(), &self.indirect_substitute_types());
             self.set_m_getter(Some(r.clone()));
             Some(r)
         }
 
-        pub override fn setter(&self, host: &Database) -> Option<Thingy> {
+        pub override fn setter(&self, host: &Database) -> Option<Entity> {
             if let Some(r) = self.m_setter() {
                 return Some(r);
             }
@@ -2573,7 +2571,7 @@ smodel! {
             if r.is_none() {
                 return r;
             }
-            let r = TypeSubstitution(host).exec(&r.unwrap(), &self.indirect_type_params(), &self.indirect_substitute_types());
+            let r = ApplyType(host).exec(&r.unwrap(), &self.indirect_type_params(), &self.indirect_substitute_types());
             self.set_m_setter(Some(r.clone()));
             Some(r)
         }
@@ -2586,15 +2584,15 @@ smodel! {
             self.origin().write_only(host)
         }
 
-        pub override fn static_type(&self, host: &Database) -> Thingy {
+        pub override fn static_type(&self, host: &Database) -> Entity {
             if let Some(r) = self.m_static_type() {
                 return r;
             }
             let r = self.origin().static_type(host);
-            if r.is::<UnresolvedThingy>() {
+            if r.is::<UnresolvedEntity>() {
                 return r;
             }
-            let r = TypeSubstitution(host).exec(&r, &self.indirect_type_params(), &self.indirect_substitute_types());
+            let r = ApplyType(host).exec(&r, &self.indirect_type_params(), &self.indirect_substitute_types());
             self.set_m_static_type(Some(r.clone()));
             r
         }
@@ -2603,11 +2601,11 @@ smodel! {
             self.origin().bindable_event()
         }
 
-        pub override fn parent(&self) -> Option<Thingy> {
+        pub override fn parent(&self) -> Option<Entity> {
             self.origin().parent()
         }
 
-        pub override fn asdoc(&self) -> Option<Rc<AsDoc>> {
+        pub override fn asdoc(&self) -> Option<Rc<Asdoc>> {
             self.origin().asdoc()
         }
 
@@ -2617,13 +2615,13 @@ smodel! {
     }
 
     /// Either an *original* method slot, or a method slot after substitution.
-    pub struct MethodSlot: Thingy {
+    pub struct MethodSlot: Entity {
         fn MethodSlot() {
             super();
         }
 
         #[inheritdoc]
-        pub override fn property_static_type(&self, host: &Database) -> Thingy {
+        pub override fn property_static_type(&self, host: &Database) -> Entity {
             host.function_type()
         }
     }
@@ -2631,17 +2629,17 @@ smodel! {
     pub struct OriginalMethodSlot: MethodSlot {
         let ref m_name: Option<QName> = None;
         let ref m_location: Option<Location> = None;
-        let ref m_asdoc: Option<Rc<AsDoc>> = None;
+        let ref m_asdoc: Option<Rc<Asdoc>> = None;
         let ref m_metadata: SharedArray<Rc<Metadata>> = SharedArray::new();
-        let ref m_activation: Option<Thingy> = None;
-        let ref m_signature: Option<Thingy> = None;
-        let ref m_parent: Option<Thingy> = None;
-        let ref m_of_virtual_slot: Option<Thingy> = None;
-        let ref m_overriden_by: SharedArray<Thingy> = SharedArray::new();
-        let ref m_overrides_method: Option<Thingy> = None;
+        let ref m_activation: Option<Entity> = None;
+        let ref m_signature: Option<Entity> = None;
+        let ref m_parent: Option<Entity> = None;
+        let ref m_of_virtual_slot: Option<Entity> = None;
+        let ref m_overriden_by: SharedArray<Entity> = SharedArray::new();
+        let ref m_overrides_method: Option<Entity> = None;
         let m_flags: MethodSlotFlags = MethodSlotFlags::empty();
 
-        pub(crate) fn OriginalMethodSlot(name: &QName, signature: &Thingy) {
+        pub(crate) fn OriginalMethodSlot(name: &QName, signature: &Entity) {
             super();
             self.set_m_name(Some(name.clone()));
             self.set_m_signature(Some(signature.clone()));
@@ -2729,19 +2727,19 @@ smodel! {
             self.set_m_location(loc);
         }
 
-        pub override fn parent(&self) -> Option<Thingy> {
+        pub override fn parent(&self) -> Option<Entity> {
             self.m_parent()
         }
     
-        pub override fn set_parent(&self, p: Option<Thingy>) {
+        pub override fn set_parent(&self, p: Option<Entity>) {
             self.set_m_parent(p);
         }
     
-        pub override fn asdoc(&self) -> Option<Rc<AsDoc>> {
+        pub override fn asdoc(&self) -> Option<Rc<Asdoc>> {
             self.m_asdoc()
         }
     
-        pub override fn set_asdoc(&self, asdoc: Option<Rc<AsDoc>>) {
+        pub override fn set_asdoc(&self, asdoc: Option<Rc<Asdoc>>) {
             self.set_m_asdoc(asdoc);
         }
     
@@ -2749,39 +2747,39 @@ smodel! {
             self.m_metadata()
         }
 
-        pub override fn signature(&self, host: &Database) -> Thingy {
+        pub override fn signature(&self, host: &Database) -> Entity {
             self.m_signature().unwrap()
         }
 
-        pub override fn set_signature(&self, signature: &Thingy) {
+        pub override fn set_signature(&self, signature: &Entity) {
             self.set_m_signature(Some(signature.clone()));
         }
 
-        pub override fn activation(&self) -> Option<Thingy> {
+        pub override fn activation(&self) -> Option<Entity> {
             self.m_activation()
         }
 
-        pub override fn set_activation(&self, activation: Option<Thingy>) {
+        pub override fn set_activation(&self, activation: Option<Entity>) {
             self.set_m_activation(activation);
         }
 
-        pub override fn of_virtual_slot(&self, host: &Database) -> Option<Thingy> {
+        pub override fn of_virtual_slot(&self, host: &Database) -> Option<Entity> {
             self.m_of_virtual_slot()
         }
 
-        pub override fn set_of_virtual_slot(&self, virtual_slot: Option<Thingy>) {
+        pub override fn set_of_virtual_slot(&self, virtual_slot: Option<Entity>) {
             self.set_m_of_virtual_slot(virtual_slot);
         }
 
-        pub override fn overriden_by(&self, host: &Database) -> SharedArray<Thingy> {
+        pub override fn overriden_by(&self, host: &Database) -> SharedArray<Entity> {
             self.m_overriden_by()
         }
 
-        pub override fn overrides_method(&self, host: &Database) -> Option<Thingy> {
+        pub override fn overrides_method(&self, host: &Database) -> Option<Entity> {
             self.m_overrides_method()
         }
 
-        pub override fn set_overrides_method(&self, method: Option<Thingy>) {
+        pub override fn set_overrides_method(&self, method: Option<Entity>) {
             self.set_m_overrides_method(method);
         }
 
@@ -2791,31 +2789,31 @@ smodel! {
     }
 
     pub struct MethodSlotAfterSubstitution: MethodSlot {
-        let ref m_origin: Option<Thingy> = None;
-        let ref m_indirect_type_params: SharedArray<Thingy> = SharedArray::new();
-        let ref m_indirect_substitute_types: SharedArray<Thingy> = SharedArray::new();
-        let ref m_signature: Option<Thingy> = None;
-        let ref m_of_virtual_slot: Option<Thingy> = None;
-        let ref m_overriden_by: Option<SharedArray<Thingy>> = None;
-        let ref m_overrides_method: Option<Thingy> = None;
+        let ref m_origin: Option<Entity> = None;
+        let ref m_indirect_type_params: SharedArray<Entity> = SharedArray::new();
+        let ref m_indirect_substitute_types: SharedArray<Entity> = SharedArray::new();
+        let ref m_signature: Option<Entity> = None;
+        let ref m_of_virtual_slot: Option<Entity> = None;
+        let ref m_overriden_by: Option<SharedArray<Entity>> = None;
+        let ref m_overrides_method: Option<Entity> = None;
         let m_is_overriding: bool = false;
 
-        pub fn MethodSlotAfterSubstitution(origin: &Thingy, indirect_type_params: &SharedArray<Thingy>, indirect_substitute_types: &SharedArray<Thingy>) {
+        pub fn MethodSlotAfterSubstitution(origin: &Entity, indirect_type_params: &SharedArray<Entity>, indirect_substitute_types: &SharedArray<Entity>) {
             super();
             self.set_m_origin(Some(origin.clone()));
             self.set_m_indirect_type_params(indirect_type_params.clone());
             self.set_m_indirect_substitute_types(indirect_substitute_types.clone());
         }
 
-        pub override fn origin(&self) -> Thingy {
+        pub override fn origin(&self) -> Entity {
             self.m_origin().unwrap()
         }
 
-        pub override fn indirect_type_params(&self) -> SharedArray<Thingy> {
+        pub override fn indirect_type_params(&self) -> SharedArray<Entity> {
             self.m_indirect_type_params()
         }
 
-        pub override fn indirect_substitute_types(&self) -> SharedArray<Thingy> {
+        pub override fn indirect_substitute_types(&self) -> SharedArray<Entity> {
             self.m_indirect_substitute_types()
         }
 
@@ -2859,11 +2857,11 @@ smodel! {
             None
         }
 
-        pub override fn parent(&self) -> Option<Thingy> {
+        pub override fn parent(&self) -> Option<Entity> {
             self.origin().parent()
         }
     
-        pub override fn asdoc(&self) -> Option<Rc<AsDoc>> {
+        pub override fn asdoc(&self) -> Option<Rc<Asdoc>> {
             self.origin().asdoc()
         }
     
@@ -2871,20 +2869,20 @@ smodel! {
             self.origin().metadata()
         }
 
-        pub override fn signature(&self, host: &Database) -> Thingy {
+        pub override fn signature(&self, host: &Database) -> Entity {
             if let Some(r) = self.m_signature() {
                 return r;
             }
             let r = self.origin().signature(host);
-            if r.is::<UnresolvedThingy>() {
+            if r.is::<UnresolvedEntity>() {
                 return r.clone();
             }
-            let r = TypeSubstitution(host).exec(&r, &self.m_indirect_type_params(), &self.m_indirect_substitute_types());
+            let r = ApplyType(host).exec(&r, &self.m_indirect_type_params(), &self.m_indirect_substitute_types());
             self.set_m_signature(Some(r.clone()));
             r
         }
 
-        pub override fn of_virtual_slot(&self, host: &Database) -> Option<Thingy> {
+        pub override fn of_virtual_slot(&self, host: &Database) -> Option<Entity> {
             if let Some(r) = self.m_of_virtual_slot() {
                 return Some(r);
             }
@@ -2892,22 +2890,22 @@ smodel! {
             if r.is_none() {
                 return None;
             }
-            let r = TypeSubstitution(host).exec(&r.unwrap(), &self.m_indirect_type_params(), &self.m_indirect_substitute_types());
+            let r = ApplyType(host).exec(&r.unwrap(), &self.m_indirect_type_params(), &self.m_indirect_substitute_types());
             self.set_m_of_virtual_slot(Some(r.clone()));
             Some(r)
         }
 
-        pub override fn overriden_by(&self, host: &Database) -> SharedArray<Thingy> {
+        pub override fn overriden_by(&self, host: &Database) -> SharedArray<Entity> {
             if let Some(r) = self.m_overriden_by() {
                 return r;
             }
             let r = self.origin().overriden_by(host);
-            let r: SharedArray<Thingy> = r.iter().map(|r| TypeSubstitution(host).exec(&r, &self.m_indirect_type_params(), &self.indirect_substitute_types())).collect();
+            let r: SharedArray<Entity> = r.iter().map(|r| ApplyType(host).exec(&r, &self.m_indirect_type_params(), &self.indirect_substitute_types())).collect();
             self.set_m_overriden_by(Some(r.clone()));
             r
         }
 
-        pub override fn overrides_method(&self, host: &Database) -> Option<Thingy> {
+        pub override fn overrides_method(&self, host: &Database) -> Option<Entity> {
             if let Some(r) = self.m_overrides_method() {
                 return Some(r);
             }
@@ -2915,12 +2913,12 @@ smodel! {
             if r.is_none() {
                 return None;
             }
-            let r = TypeSubstitution(host).exec(&r.unwrap(), &self.m_indirect_type_params(), &self.m_indirect_substitute_types());
+            let r = ApplyType(host).exec(&r.unwrap(), &self.m_indirect_type_params(), &self.m_indirect_substitute_types());
             self.set_m_overrides_method(Some(r.clone()));
             Some(r)
         }
 
-        pub override fn set_overrides_method(&self, method: Option<Thingy>) {
+        pub override fn set_overrides_method(&self, method: Option<Entity>) {
             self.set_m_overrides_method(method);
         }
 
@@ -2929,96 +2927,96 @@ smodel! {
         }
     }
 
-    pub struct Scope: Thingy {
-        let ref m_parent: Option<Thingy> = None;
-        let ref m_properties: NameMap = NameMap::new();
-        let ref m_open_ns_set: SharedArray<Thingy> = SharedArray::new();
-        let ref m_import_list: SharedArray<Thingy> = SharedArray::new();
+    pub struct Scope: Entity {
+        let ref m_parent: Option<Entity> = None;
+        let ref m_properties: Names = Names::new();
+        let ref m_open_ns_set: SharedArray<Entity> = SharedArray::new();
+        let ref m_import_list: SharedArray<Entity> = SharedArray::new();
 
         pub(crate) fn Scope() {
             super();
         }
 
-        pub override fn parent(&self) -> Option<Thingy> {
+        pub override fn parent(&self) -> Option<Entity> {
             self.m_parent()
         }
 
-        pub override fn set_parent(&self, p: Option<Thingy>) {
+        pub override fn set_parent(&self, p: Option<Entity>) {
             self.set_m_parent(p);
         }
 
-        pub override fn properties(&self, host: &Database) -> NameMap {
+        pub override fn properties(&self, host: &Database) -> Names {
             self.m_properties()
         }
 
-        pub override fn open_ns_set(&self) -> SharedArray<Thingy> {
+        pub override fn open_ns_set(&self) -> SharedArray<Entity> {
             self.m_open_ns_set()
         }
 
         /// List of [`PackagePropertyImport`], [`PackageWildcardImport`], or [`PackageRecursiveImport`].
-        pub override fn import_list(&self) -> SharedArray<Thingy> {
+        pub override fn import_list(&self) -> SharedArray<Entity> {
             self.m_import_list()
         }
     }
 
     pub struct WithScope: Scope {
-        let ref m_object: Option<Thingy> = None;
+        let ref m_object: Option<Entity> = None;
 
-        pub(crate) fn WithScope(object: &Thingy) {
+        pub(crate) fn WithScope(object: &Entity) {
             super();
             self.set_m_object(Some(object.clone()));
         }
 
-        pub override fn object(&self) -> Thingy {
+        pub override fn object(&self) -> Entity {
             self.m_object().unwrap()
         }
     }
 
     pub struct FilterScope: Scope {
-        let ref m_base: Option<Thingy> = None;
+        let ref m_base: Option<Entity> = None;
 
-        pub(crate) fn FilterScope(base: &Thingy) {
+        pub(crate) fn FilterScope(base: &Entity) {
             super();
             self.set_m_base(Some(base.clone()));
         }
 
-        pub override fn base(&self) -> Thingy {
+        pub override fn base(&self) -> Entity {
             self.m_base().unwrap()
         }
     }
 
     pub struct Activation: Scope {
         let m_kind: u8 = DEFAULT_ACTIVATION;
-        let ref m_method: Option<Thingy> = None;
-        let ref m_this: Option<Thingy> = None;
-        let ref m_property_has_capture: Option<SharedArray<Thingy>> = None;
+        let ref m_method: Option<Entity> = None;
+        let ref m_this: Option<Entity> = None;
+        let ref m_property_has_capture: Option<SharedArray<Entity>> = None;
         let ref m_cfg: ControlFlowGraph = ControlFlowGraph::new();
-        let ref m_public_ns: Option<Thingy> = None;
-        let ref m_internal_ns: Option<Thingy> = None;
+        let ref m_public_ns: Option<Entity> = None;
+        let ref m_internal_ns: Option<Entity> = None;
 
-        pub(crate) fn Activation(of_method: &Thingy) {
+        pub(crate) fn Activation(of_method: &Entity) {
             super();
             self.set_m_method(Some(of_method.clone()));
         }
 
-        pub override fn of_method(&self) -> Thingy {
+        pub override fn of_method(&self) -> Entity {
             self.m_method().unwrap()
         }
 
         /// An optional `ThisObject` value.
-        pub override fn this(&self) -> Option<Thingy> {
+        pub override fn this(&self) -> Option<Entity> {
             self.m_this()
         }
 
         /// Sets a `ThisObject` value.
-        pub override fn set_this(&self, this: Option<Thingy>) {
+        pub override fn set_this(&self, this: Option<Entity>) {
             self.set_m_this(this);
         }
 
         /// Indicates whether an activation's property has been captured
         /// by a subsequent activation. Properties include, for example, the range from the
         /// activation to an inner most block scope.
-        pub override fn property_has_capture(&self, property: &Thingy) -> bool {
+        pub override fn property_has_capture(&self, property: &Entity) -> bool {
             if let Some(set) = self.m_property_has_capture() {
                 set.includes(property)
             } else {
@@ -3026,7 +3024,7 @@ smodel! {
             }
         }
 
-        pub override fn set_property_has_capture(&self, property: &Thingy, value: bool) {
+        pub override fn set_property_has_capture(&self, property: &Entity, value: bool) {
             if let Some(mut set) = self.m_property_has_capture() {
                 if value {
                     if !set.includes(property) {
@@ -3063,19 +3061,19 @@ smodel! {
             self.set_m_kind(if value { PACKAGE_INIT_ACTIVATION } else { DEFAULT_ACTIVATION });
         }
 
-        pub override fn public_ns(&self) -> Option<Thingy> {
+        pub override fn public_ns(&self) -> Option<Entity> {
             self.m_public_ns()
         }
 
-        pub override fn set_public_ns(&self, ns: Option<Thingy>) {
+        pub override fn set_public_ns(&self, ns: Option<Entity>) {
             self.set_m_public_ns(ns);
         }
 
-        pub override fn internal_ns(&self) -> Option<Thingy> {
+        pub override fn internal_ns(&self) -> Option<Entity> {
             self.m_internal_ns()
         }
 
-        pub override fn set_internal_ns(&self, ns: Option<Thingy>) {
+        pub override fn set_internal_ns(&self, ns: Option<Entity>) {
             self.set_m_internal_ns(ns);
         }
     }
@@ -3087,94 +3085,94 @@ smodel! {
     }
 
     pub struct ClassScope: FixtureScope {
-        let ref m_class: Option<Thingy> = None;
+        let ref m_class: Option<Entity> = None;
 
-        pub(crate) fn ClassScope(class: &Thingy) {
+        pub(crate) fn ClassScope(class: &Entity) {
             super();
             self.set_m_class(Some(class.clone()));
         }
 
-        pub override fn class(&self) -> Thingy {
+        pub override fn class(&self) -> Entity {
             self.m_class().unwrap()
         }
     }
 
     pub struct EnumScope: FixtureScope {
-        let ref m_class: Option<Thingy> = None;
+        let ref m_class: Option<Entity> = None;
 
-        pub(crate) fn EnumScope(class: &Thingy) {
+        pub(crate) fn EnumScope(class: &Entity) {
             super();
             self.set_m_class(Some(class.clone()));
         }
 
-        pub override fn class(&self) -> Thingy {
+        pub override fn class(&self) -> Entity {
             self.m_class().unwrap()
         }
     }
 
     pub struct InterfaceScope: FixtureScope {
-        let ref m_itrfc: Option<Thingy> = None;
+        let ref m_itrfc: Option<Entity> = None;
 
-        pub(crate) fn InterfaceScope(itrfc: &Thingy) {
+        pub(crate) fn InterfaceScope(itrfc: &Entity) {
             super();
             self.set_m_itrfc(Some(itrfc.clone()));
         }
 
-        pub override fn interface(&self) -> Thingy {
+        pub override fn interface(&self) -> Entity {
             self.m_itrfc().unwrap()
         }
     }
 
     pub struct PackageScope: FixtureScope {
-        let ref m_pckg: Option<Thingy> = None;
+        let ref m_pckg: Option<Entity> = None;
 
-        pub(crate) fn PackageScope(pckg: &Thingy) {
+        pub(crate) fn PackageScope(pckg: &Entity) {
             super();
             self.set_m_pckg(Some(pckg.clone()));
         }
 
-        pub override fn package(&self) -> Thingy {
+        pub override fn package(&self) -> Entity {
             self.m_pckg().unwrap()
         }
     }
 
-    pub struct Value: Thingy {
-        let ref m_static_type: Option<Thingy> = None;
+    pub struct Value: Entity {
+        let ref m_static_type: Option<Entity> = None;
 
-        pub(crate) fn Value(static_type: &Thingy) {
+        pub(crate) fn Value(static_type: &Entity) {
             super();
             self.set_m_static_type(Some(static_type.clone()));
         }
 
-        pub override fn static_type(&self, host: &Database) -> Thingy {
+        pub override fn static_type(&self, host: &Database) -> Entity {
             self.m_static_type().unwrap()
         }
 
-        pub override fn set_static_type(&self, value: Thingy) {
+        pub override fn set_static_type(&self, value: Entity) {
             self.set_m_static_type(Some(value));
         }
 
         #[inheritdoc]
-        pub override fn property_static_type(&self, host: &Database) -> Thingy {
+        pub override fn property_static_type(&self, host: &Database) -> Entity {
             self.static_type(host)
         }
     }
 
     pub struct PackagePropertyImport: Value {
-        let ref m_property: Option<Thingy> = None;
+        let ref m_property: Option<Entity> = None;
         let ref m_location: Option<Location> = None;
 
-        pub(crate) fn PackagePropertyImport(property: &Thingy, location: Option<Location>, static_type: &Thingy) {
+        pub(crate) fn PackagePropertyImport(property: &Entity, location: Option<Location>, static_type: &Entity) {
             super(static_type);
             self.set_m_property(Some(property.clone()));
             self.set_m_location(location);
         }
 
-        pub override fn property(&self) -> Thingy {
+        pub override fn property(&self) -> Entity {
             self.m_property().unwrap()
         }
 
-        pub override fn set_property(&self, value: &Thingy) {
+        pub override fn set_property(&self, value: &Entity) {
             self.set_m_property(Some(value.clone()));
         }
 
@@ -3188,16 +3186,16 @@ smodel! {
     }
 
     pub struct PackageWildcardImport: Value {
-        let ref m_package: Option<Thingy> = None;
+        let ref m_package: Option<Entity> = None;
         let ref m_location: Option<Location> = None;
 
-        pub(crate) fn PackageWildcardImport(package: &Thingy, location: Option<Location>, static_type: &Thingy) {
+        pub(crate) fn PackageWildcardImport(package: &Entity, location: Option<Location>, static_type: &Entity) {
             super(static_type);
             self.set_m_package(Some(package.clone()));
             self.set_m_location(location);
         }
 
-        pub override fn package(&self) -> Thingy {
+        pub override fn package(&self) -> Entity {
             self.m_package().unwrap()
         }
 
@@ -3211,16 +3209,16 @@ smodel! {
     }
 
     pub struct PackageRecursiveImport: Value {
-        let ref m_package: Option<Thingy> = None;
+        let ref m_package: Option<Entity> = None;
         let ref m_location: Option<Location> = None;
 
-        pub(crate) fn PackageRecursiveImport(package: &Thingy, location: Option<Location>, static_type: &Thingy) {
+        pub(crate) fn PackageRecursiveImport(package: &Entity, location: Option<Location>, static_type: &Entity) {
             super(static_type);
             self.set_m_package(Some(package.clone()));
             self.set_m_location(location);
         }
 
-        pub override fn package(&self) -> Thingy {
+        pub override fn package(&self) -> Entity {
             self.m_package().unwrap()
         }
 
@@ -3234,41 +3232,41 @@ smodel! {
     }
 
     pub struct Constant: Value {
-        pub(crate) fn Constant(static_type: &Thingy) {
+        pub(crate) fn Constant(static_type: &Entity) {
             super(static_type);
         }
     }
 
     /// Constant with possible types being `*` or `Object`.
     pub struct UndefinedConstant: Constant {
-        pub(crate) fn UndefinedConstant(static_type: &Thingy) {
+        pub(crate) fn UndefinedConstant(static_type: &Entity) {
             super(static_type);
         }
 
-        pub override fn clone_constant(&self, host: &Database) -> Thingy {
+        pub override fn clone_constant(&self, host: &Database) -> Entity {
             host.factory().create_undefined_constant(&self.static_type(host))
         }
     }
 
     pub struct NullConstant: Constant {
-        pub(crate) fn NullConstant(static_type: &Thingy) {
+        pub(crate) fn NullConstant(static_type: &Entity) {
             super(static_type);
         }
 
-        pub override fn clone_constant(&self, host: &Database) -> Thingy {
+        pub override fn clone_constant(&self, host: &Database) -> Entity {
             host.factory().create_null_constant(&self.static_type(host))
         }
     }
 
     pub struct NamespaceConstant: Constant {
-        let ref m_ns: Option<Thingy> = None;
+        let ref m_ns: Option<Entity> = None;
 
-        pub(crate) fn NamespaceConstant(referenced_ns: &Thingy, static_type: &Thingy) {
+        pub(crate) fn NamespaceConstant(referenced_ns: &Entity, static_type: &Entity) {
             super(static_type);
             self.set_m_ns(Some(referenced_ns.clone()));
         }
 
-        pub override fn referenced_ns(&self) -> Thingy {
+        pub override fn referenced_ns(&self) -> Entity {
             self.m_ns().unwrap()
         }
 
@@ -3276,41 +3274,41 @@ smodel! {
             true
         }
 
-        pub override fn clone_constant(&self, host: &Database) -> Thingy {
+        pub override fn clone_constant(&self, host: &Database) -> Entity {
             host.factory().create_namespace_constant_with_static_type(&self.referenced_ns(), &self.static_type(host))
         }
     }
 
     pub struct TypeConstant: Constant {
-        let ref m_type: Option<Thingy> = None;
+        let ref m_type: Option<Entity> = None;
 
-        pub(crate) fn TypeConstant(referenced_type: &Thingy, static_type: &Thingy) {
+        pub(crate) fn TypeConstant(referenced_type: &Entity, static_type: &Entity) {
             super(static_type);
             self.set_m_type(Some(referenced_type.clone()));
         }
 
-        pub override fn referenced_type(&self) -> Thingy {
+        pub override fn referenced_type(&self) -> Entity {
             self.m_type().unwrap()
         }
 
-        pub override fn clone_constant(&self, host: &Database) -> Thingy {
+        pub override fn clone_constant(&self, host: &Database) -> Entity {
             host.factory().create_type_constant_with_static_type(&self.referenced_type(), &self.static_type(host))
         }
     }
 
     pub struct NumberConstant: Constant {
-        let ref m_value: NumberVariant = NumberVariant::Int(0);
+        let ref m_value: Number = Number::Int(0);
 
-        pub(crate) fn NumberConstant(value: NumberVariant, static_type: &Thingy) {
+        pub(crate) fn NumberConstant(value: Number, static_type: &Entity) {
             super(static_type);
             self.set_m_value(value);
         }
 
-        pub override fn number_value(&self) -> NumberVariant {
+        pub override fn number_value(&self) -> Number {
             self.m_value()
         }
 
-        pub override fn clone_constant(&self, host: &Database) -> Thingy {
+        pub override fn clone_constant(&self, host: &Database) -> Entity {
             host.factory().create_number_constant(self.m_value(), &self.static_type(host))
         }
     }
@@ -3318,7 +3316,7 @@ smodel! {
     pub struct StringConstant: Constant {
         let ref m_value: String = String::new();
 
-        pub(crate) fn StringConstant(value: String, static_type: &Thingy) {
+        pub(crate) fn StringConstant(value: String, static_type: &Entity) {
             super(static_type);
             self.set_m_value(value);
         }
@@ -3327,7 +3325,7 @@ smodel! {
             self.m_value()
         }
 
-        pub override fn clone_constant(&self, host: &Database) -> Thingy {
+        pub override fn clone_constant(&self, host: &Database) -> Entity {
             host.factory().create_string_constant(self.m_value(), &self.static_type(host))
         }
     }
@@ -3335,7 +3333,7 @@ smodel! {
     pub struct BooleanConstant: Constant {
         let m_value: bool = true;
 
-        pub(crate) fn BooleanConstant(value: bool, static_type: &Thingy) {
+        pub(crate) fn BooleanConstant(value: bool, static_type: &Entity) {
             super(static_type);
             self.set_m_value(value);
         }
@@ -3344,59 +3342,59 @@ smodel! {
             self.m_value()
         }
 
-        pub override fn clone_constant(&self, host: &Database) -> Thingy {
+        pub override fn clone_constant(&self, host: &Database) -> Entity {
             host.factory().create_boolean_constant(self.m_value(), &self.static_type(host))
         }
     }
 
     pub struct ThisObject: Value {
-        pub(crate) fn ThisObject(static_type: &Thingy) {
+        pub(crate) fn ThisObject(static_type: &Entity) {
             super(static_type);
         }
     }
 
     /// The `import.meta` value.
     pub struct MetaProperty: Value {
-        pub(crate) fn MetaProperty(static_type: &Thingy) {
+        pub(crate) fn MetaProperty(static_type: &Entity) {
             super(static_type);
         }
     }
 
     /// The `import.meta.env` value.
     pub struct MetaEnvProperty: Value {
-        pub(crate) fn MetaEnvProperty(static_type: &Thingy) {
+        pub(crate) fn MetaEnvProperty(static_type: &Entity) {
             super(static_type);
         }
     }
 
     pub struct ReferenceValue: Value {
-        pub(crate) fn ReferenceValue(static_type: &Thingy) {
+        pub(crate) fn ReferenceValue(static_type: &Entity) {
             super(static_type);
         }
     }
 
     /// Possibly uses attribute.
     pub struct XmlReferenceValue: ReferenceValue {
-        let ref m_base: Option<Thingy> = None;
-        let ref m_qual: Option<Thingy> = None;
-        let ref m_key: Option<Thingy> = None;
+        let ref m_base: Option<Entity> = None;
+        let ref m_qual: Option<Entity> = None;
+        let ref m_key: Option<Entity> = None;
 
-        pub(crate) fn XmlReferenceValue(base: &Thingy, qualifier: Option<Thingy>, key: &Thingy, static_type: &Thingy) {
+        pub(crate) fn XmlReferenceValue(base: &Entity, qualifier: Option<Entity>, key: &Entity, static_type: &Entity) {
             super(static_type);
             self.set_m_base(Some(base.clone()));
             self.set_m_qual(qualifier);
             self.set_m_key(Some(key.clone()));
         }
 
-        pub override fn base(&self) -> Thingy {
+        pub override fn base(&self) -> Entity {
             self.m_base().unwrap()
         }
 
-        pub override fn qualifier(&self) -> Option<Thingy> {
+        pub override fn qualifier(&self) -> Option<Entity> {
             self.m_qual()
         }
 
-        pub override fn key(&self) -> Thingy {
+        pub override fn key(&self) -> Entity {
             self.m_key().unwrap()
         }
 
@@ -3415,26 +3413,26 @@ smodel! {
 
     /// Possibly uses attribute.
     pub struct DynamicReferenceValue: ReferenceValue {
-        let ref m_base: Option<Thingy> = None;
-        let ref m_qual: Option<Thingy> = None;
-        let ref m_key: Option<Thingy> = None;
+        let ref m_base: Option<Entity> = None;
+        let ref m_qual: Option<Entity> = None;
+        let ref m_key: Option<Entity> = None;
 
-        pub(crate) fn DynamicReferenceValue(base: &Thingy, qualifier: Option<Thingy>, key: &Thingy, static_type: &Thingy) {
+        pub(crate) fn DynamicReferenceValue(base: &Entity, qualifier: Option<Entity>, key: &Entity, static_type: &Entity) {
             super(static_type);
             self.set_m_base(Some(base.clone()));
             self.set_m_qual(qualifier);
             self.set_m_key(Some(key.clone()));
         }
 
-        pub override fn base(&self) -> Thingy {
+        pub override fn base(&self) -> Entity {
             self.m_base().unwrap()
         }
 
-        pub override fn qualifier(&self) -> Option<Thingy> {
+        pub override fn qualifier(&self) -> Option<Entity> {
             self.m_qual()
         }
 
-        pub override fn key(&self) -> Thingy {
+        pub override fn key(&self) -> Entity {
             self.m_key().unwrap()
         }
 
@@ -3452,20 +3450,20 @@ smodel! {
     }
 
     pub struct FixtureReferenceValue: ReferenceValue {
-        let ref m_base: Option<Thingy> = None;
-        let ref m_property: Option<Thingy> = None;
+        let ref m_base: Option<Entity> = None;
+        let ref m_property: Option<Entity> = None;
 
-        pub(crate) fn FixtureReferenceValue(base: &Thingy, property: &Thingy, static_type: &Thingy) {
+        pub(crate) fn FixtureReferenceValue(base: &Entity, property: &Entity, static_type: &Entity) {
             super(static_type);
             self.set_m_base(Some(base.clone()));
             self.set_m_property(Some(property.clone()));
         }
 
-        pub override fn base(&self) -> Thingy {
+        pub override fn base(&self) -> Entity {
             self.m_base().unwrap()
         }
 
-        pub override fn property(&self) -> Thingy {
+        pub override fn property(&self) -> Entity {
             self.m_property().unwrap()
         }
 
@@ -3483,32 +3481,32 @@ smodel! {
     }
 
     pub struct StaticReferenceValue: FixtureReferenceValue {
-        pub(crate) fn StaticReferenceValue(base: &Thingy, property: &Thingy, static_type: &Thingy) {
+        pub(crate) fn StaticReferenceValue(base: &Entity, property: &Entity, static_type: &Entity) {
             super(base, property, static_type);
         }
     }
 
     pub struct StaticDynamicReferenceValue: ReferenceValue {
-        let ref m_base: Option<Thingy> = None;
-        let ref m_qual: Option<Thingy> = None;
-        let ref m_key: Option<Thingy> = None;
+        let ref m_base: Option<Entity> = None;
+        let ref m_qual: Option<Entity> = None;
+        let ref m_key: Option<Entity> = None;
 
-        pub(crate) fn StaticDynamicReferenceValue(base: &Thingy, qualifier: Option<Thingy>, key: &Thingy, static_type: &Thingy) {
+        pub(crate) fn StaticDynamicReferenceValue(base: &Entity, qualifier: Option<Entity>, key: &Entity, static_type: &Entity) {
             super(static_type);
             self.set_m_base(Some(base.clone()));
             self.set_m_qual(qualifier);
             self.set_m_key(Some(key.clone()));
         }
 
-        pub override fn base(&self) -> Thingy {
+        pub override fn base(&self) -> Entity {
             self.m_base().unwrap()
         }
 
-        pub override fn qualifier(&self) -> Option<Thingy> {
+        pub override fn qualifier(&self) -> Option<Entity> {
             self.m_qual()
         }
 
-        pub override fn key(&self) -> Thingy {
+        pub override fn key(&self) -> Entity {
             self.m_key().unwrap()
         }
 
@@ -3527,23 +3525,23 @@ smodel! {
 
     /// Instance reference value in a possibly non nullable base.
     pub struct InstanceReferenceValue: FixtureReferenceValue {
-        pub(crate) fn InstanceReferenceValue(base: &Thingy, property: &Thingy, static_type: &Thingy) {
+        pub(crate) fn InstanceReferenceValue(base: &Entity, property: &Entity, static_type: &Entity) {
             super(base, property, static_type);
         }
     }
 
     /// Tuple reference value in a possibly non nullable base.
     pub struct TupleReferenceValue: ReferenceValue {
-        let ref m_base: Option<Thingy> = None;
+        let ref m_base: Option<Entity> = None;
         let ref m_index: usize = 0;
 
-        pub(crate) fn TupleReferenceValue(base: &Thingy, index: usize, static_type: &Thingy) {
+        pub(crate) fn TupleReferenceValue(base: &Entity, index: usize, static_type: &Entity) {
             super(static_type);
             self.set_m_base(Some(base.clone()));
             self.set_m_index(index);
         }
 
-        pub override fn base(&self) -> Thingy {
+        pub override fn base(&self) -> Entity {
             self.m_base().unwrap()
         }
 
@@ -3565,33 +3563,33 @@ smodel! {
     }
 
     pub struct ScopeReferenceValue: FixtureReferenceValue {
-        pub(crate) fn ScopeReferenceValue(base: &Thingy, property: &Thingy, static_type: &Thingy) {
+        pub(crate) fn ScopeReferenceValue(base: &Entity, property: &Entity, static_type: &Entity) {
             super(base, property, static_type);
         }
     }
 
     /// Possibly uses attribute.
     pub struct DynamicScopeReferenceValue: ReferenceValue {
-        let ref m_base: Option<Thingy> = None;
-        let ref m_qual: Option<Thingy> = None;
-        let ref m_key: Option<Thingy> = None;
+        let ref m_base: Option<Entity> = None;
+        let ref m_qual: Option<Entity> = None;
+        let ref m_key: Option<Entity> = None;
 
-        pub(crate) fn DynamicScopeReferenceValue(base: &Thingy, qualifier: Option<Thingy>, key: &Thingy, static_type: &Thingy) {
+        pub(crate) fn DynamicScopeReferenceValue(base: &Entity, qualifier: Option<Entity>, key: &Entity, static_type: &Entity) {
             super(static_type);
             self.set_m_base(Some(base.clone()));
             self.set_m_qual(qualifier);
             self.set_m_key(Some(key.clone()));
         }
 
-        pub override fn base(&self) -> Thingy {
+        pub override fn base(&self) -> Entity {
             self.m_base().unwrap()
         }
 
-        pub override fn qualifier(&self) -> Option<Thingy> {
+        pub override fn qualifier(&self) -> Option<Entity> {
             self.m_qual()
         }
 
-        pub override fn key(&self) -> Thingy {
+        pub override fn key(&self) -> Entity {
             self.m_key().unwrap()
         }
 
@@ -3609,7 +3607,7 @@ smodel! {
     }
 
     pub struct PackageReferenceValue: FixtureReferenceValue {
-        pub(crate) fn PackageReferenceValue(base: &Thingy, property: &Thingy, static_type: &Thingy) {
+        pub(crate) fn PackageReferenceValue(base: &Entity, property: &Entity, static_type: &Entity) {
             super(base, property, static_type);
         }
     }
@@ -3617,20 +3615,20 @@ smodel! {
     /// Array element reference value with a possibly non-nullable base.
     /// The key is assumed to be of the `Number` data type.
     pub struct ArrayElementReferenceValue: ReferenceValue {
-        let ref m_base: Option<Thingy> = None;
-        let ref m_key: Option<Thingy> = None;
+        let ref m_base: Option<Entity> = None;
+        let ref m_key: Option<Entity> = None;
 
-        pub(crate) fn ArrayElementReferenceValue(base: &Thingy, key: &Thingy, static_type: &Thingy) {
+        pub(crate) fn ArrayElementReferenceValue(base: &Entity, key: &Entity, static_type: &Entity) {
             super(static_type);
             self.set_m_base(Some(base.clone()));
             self.set_m_key(Some(key.clone()));
         }
 
-        pub override fn base(&self) -> Thingy {
+        pub override fn base(&self) -> Entity {
             self.m_base().unwrap()
         }
 
-        pub override fn key(&self) -> Thingy {
+        pub override fn key(&self) -> Entity {
             self.m_key().unwrap()
         }
 
@@ -3650,20 +3648,20 @@ smodel! {
     /// Vector element reference value with a possibly non-nullable base.
     /// The key is assumed to be of the `Number` data type.
     pub struct VectorElementReferenceValue: ReferenceValue {
-        let ref m_base: Option<Thingy> = None;
-        let ref m_key: Option<Thingy> = None;
+        let ref m_base: Option<Entity> = None;
+        let ref m_key: Option<Entity> = None;
 
-        pub(crate) fn VectorElementReferenceValue(base: &Thingy, key: &Thingy, static_type: &Thingy) {
+        pub(crate) fn VectorElementReferenceValue(base: &Entity, key: &Entity, static_type: &Entity) {
             super(static_type);
             self.set_m_base(Some(base.clone()));
             self.set_m_key(Some(key.clone()));
         }
 
-        pub override fn base(&self) -> Thingy {
+        pub override fn base(&self) -> Entity {
             self.m_base().unwrap()
         }
 
-        pub override fn key(&self) -> Thingy {
+        pub override fn key(&self) -> Entity {
             self.m_key().unwrap()
         }
 
@@ -3682,26 +3680,26 @@ smodel! {
 
     /// Represents the resulting value of a conversion, whether implicit or explicit.
     pub struct ConversionValue: Value {
-        let ref m_base: Option<Thingy> = None;
-        let m_variant: TypeConversionVariant = TypeConversionVariant::BetweenNumber;
+        let ref m_base: Option<Entity> = None;
+        let m_kind: ConversionKind = ConversionKind::BetweenNumber;
         let m_opt: bool = true;
-        let ref m_target: Option<Thingy> = None;
+        let ref m_target: Option<Entity> = None;
 
-        pub(crate) fn ConversionValue(base: &Thingy, variant: TypeConversionVariant, opt: bool, target: &Thingy, static_type: &Thingy) {
+        pub(crate) fn ConversionValue(base: &Entity, variant: ConversionKind, opt: bool, target: &Entity, static_type: &Entity) {
             super(static_type);
             self.set_m_base(Some(base.clone()));
-            self.set_m_variant(variant);
+            self.set_m_kind(variant);
             self.set_m_opt(opt);
             self.set_m_target(Some(target.clone()));
         }
 
         /// Original value.
-        pub override fn base(&self) -> Thingy {
+        pub override fn base(&self) -> Entity {
             self.m_base().unwrap()
         }
 
-        pub override fn conversion_variant(&self) -> TypeConversionVariant {
-            self.m_variant()
+        pub override fn conversion_kind(&self) -> ConversionKind {
+            self.m_kind()
         }
 
         /// Indicates whether the conversion has been performed by the `as` operator
@@ -3711,154 +3709,154 @@ smodel! {
             self.m_opt()
         }
 
-        pub override fn conversion_target(&self) -> Thingy {
+        pub override fn conversion_target(&self) -> Entity {
             self.m_target().unwrap()
         }
     }
 
     /// Non-null assertion value as part of fields from object destructuring.
     pub struct NonNullValue: Value {
-        let ref m_base: Option<Thingy> = None;
+        let ref m_base: Option<Entity> = None;
 
-        pub(crate) fn NonNullValue(base: &Thingy, static_type: &Thingy) {
+        pub(crate) fn NonNullValue(base: &Entity, static_type: &Entity) {
             super(static_type);
             self.set_m_base(Some(base.clone()));
         }
 
         /// Original value.
-        pub override fn base(&self) -> Thingy {
+        pub override fn base(&self) -> Entity {
             self.m_base().unwrap()
         }
     }
 
     /// Represents the direct value of a `function` expression, holding back its activation.
     pub struct LambdaObject: Value {
-        let ref m_activation: Option<Thingy> = None;
+        let ref m_activation: Option<Entity> = None;
 
-        pub(crate) fn LambdaObject(activation: &Thingy, static_type: &Thingy) {
+        pub(crate) fn LambdaObject(activation: &Entity, static_type: &Entity) {
             super(static_type);
             self.set_m_activation(Some(activation.clone()));
         }
 
         // Returns a `Some(activation)` value.
-        pub override fn activation(&self) -> Option<Thingy> {
+        pub override fn activation(&self) -> Option<Entity> {
             self.m_activation()
         }
     }
 
     /// Represents the direct value of a filter expression, holding back its scope.
     pub struct FilterValue: Value {
-        let ref m_scope: Option<Thingy> = None;
+        let ref m_scope: Option<Entity> = None;
 
-        pub(crate) fn FilterValue(scope: &Thingy, static_type: &Thingy) {
+        pub(crate) fn FilterValue(scope: &Entity, static_type: &Entity) {
             super(static_type);
             self.set_m_scope(Some(scope.clone()));
         }
 
-        pub override fn scope(&self) -> Thingy {
+        pub override fn scope(&self) -> Entity {
             self.m_scope().unwrap()
         }
     }
 
     /// Resolutions of a field in an object initializer, including shorthand resolution
     /// and the field slot. This is only assigned to a field where applicable.
-    pub struct FieldResolution: Thingy {
-        let ref m_shorthand_resolution: Option<Thingy> = None;
-        let ref m_field_slot: Option<Thingy> = None;
+    pub struct FieldResolution: Entity {
+        let ref m_shorthand_resolution: Option<Entity> = None;
+        let ref m_field_slot: Option<Entity> = None;
 
         pub(crate) fn FieldResolution() {
             super();
         }
 
-        pub override fn shorthand_resolution(&self) -> Option<Thingy> {
+        pub override fn shorthand_resolution(&self) -> Option<Entity> {
             self.m_shorthand_resolution()
         }
 
-        pub override fn set_shorthand_resolution(&self, value: Option<Thingy>) {
+        pub override fn set_shorthand_resolution(&self, value: Option<Entity>) {
             self.set_m_shorthand_resolution(value);
         }
 
-        pub override fn field_slot(&self) -> Option<Thingy> {
+        pub override fn field_slot(&self) -> Option<Entity> {
             self.m_field_slot()
         }
 
-        pub override fn set_field_slot(&self, value: Option<Thingy>) {
+        pub override fn set_field_slot(&self, value: Option<Entity>) {
             self.set_m_field_slot(value);
         }
     }
 
     /// Resolutions of a field in a declarative object destructuring pattern.
-    pub struct DeclarativeFieldDestructuringResolution: Thingy {
-        let ref m_field_reference: Option<Thingy> = None;
-        let ref m_var_slot: Option<Thingy> = None;
+    pub struct DeclarativeFieldDestructuringResolution: Entity {
+        let ref m_field_reference: Option<Entity> = None;
+        let ref m_var_slot: Option<Entity> = None;
 
         pub(crate) fn DeclarativeFieldDestructuringResolution() {
             super();
         }
 
         /// Reference value, non-null value, or constant.
-        pub override fn field_reference(&self) -> Option<Thingy> {
+        pub override fn field_reference(&self) -> Option<Entity> {
             self.m_field_reference()
         }
 
         /// Reference value, non-null value, or constant.
-        pub override fn set_field_reference(&self, value: Option<Thingy>) {
+        pub override fn set_field_reference(&self, value: Option<Entity>) {
             self.set_m_field_reference(value);
         }
 
         /// For fields without subpatterns, indicates
         /// the assigned variable slot.
-        pub override fn var_slot(&self) -> Option<Thingy> {
+        pub override fn var_slot(&self) -> Option<Entity> {
             self.m_var_slot()
         }
 
         /// For fields without subpatterns, indicates
         /// the assigned variable slot.
-        pub override fn set_var_slot(&self, value: Option<Thingy>) {
+        pub override fn set_var_slot(&self, value: Option<Entity>) {
             self.set_m_var_slot(value);
         }
     }
 
     /// Resolutions of a field in an assignment object destructuring pattern.
-    pub struct AssignmentFieldDestructuringResolution: Thingy {
-        let ref m_field_reference: Option<Thingy> = None;
-        let ref m_target_reference: Option<Thingy> = None;
+    pub struct AssignmentFieldDestructuringResolution: Entity {
+        let ref m_field_reference: Option<Entity> = None;
+        let ref m_target_reference: Option<Entity> = None;
 
         pub(crate) fn AssignmentFieldDestructuringResolution() {
             super();
         }
 
         /// Reference value, non-null value, or constant.
-        pub override fn field_reference(&self) -> Option<Thingy> {
+        pub override fn field_reference(&self) -> Option<Entity> {
             self.m_field_reference()
         }
 
         /// Reference value, non-null value, or constant.
-        pub override fn set_field_reference(&self, value: Option<Thingy>) {
+        pub override fn set_field_reference(&self, value: Option<Entity>) {
             self.set_m_field_reference(value);
         }
 
         /// For fields without subpatterns, indicates
         /// the target reference value.
-        pub override fn target_reference(&self) -> Option<Thingy> {
+        pub override fn target_reference(&self) -> Option<Entity> {
             self.m_target_reference()
         }
 
         /// For fields without subpatterns, indicates
         /// the target reference value.
-        pub override fn set_target_reference(&self, value: Option<Thingy>) {
+        pub override fn set_target_reference(&self, value: Option<Entity>) {
             self.set_m_target_reference(value);
         }
     }
 }
 
-impl ToString for Thingy {
+impl ToString for Entity {
     fn to_string(&self) -> String {
         self.to_string_1()
     }
 }
 
-impl DiagnosticArgument for Thingy {}
+impl DiagnosticArgument for Entity {}
 
 #[derive(Copy, Clone, PartialEq)]
 pub enum SystemNamespaceKind {
@@ -3900,7 +3898,7 @@ impl QName {
         ns.is_public_ns() || ns.is_protected_ns()
     }
 
-    pub fn namespace(&self) -> Thingy {
+    pub fn namespace(&self) -> Entity {
         self.0.m_namespace.clone()
     }
 
@@ -3908,7 +3906,7 @@ impl QName {
         self.0.m_local_name.clone()
     }
 
-    pub fn matches_in_ns_set_or_any_public_ns(&self, ns_set: &SharedArray<Thingy>, local_name: &str) -> bool {
+    pub fn matches_in_ns_set_or_any_public_ns(&self, ns_set: &SharedArray<Entity>, local_name: &str) -> bool {
         let ns1 = self.namespace();
         if !ns1.is_public_ns() {
             let found_ns = ns_set.iter().find(|ns2| &ns1 == ns2).is_some();
@@ -3935,7 +3933,7 @@ impl PartialEq for QName {
 impl Eq for QName {}
 
 pub(crate) struct QName1 {
-    pub(crate) m_namespace: Thingy,
+    pub(crate) m_namespace: Entity,
     pub(crate) m_local_name: String,
 }
 
@@ -3992,18 +3990,18 @@ bitflags! {
 /// Parameter belonging to a function type in the semantic model.
 pub struct SemanticFunctionTypeParameter {
     pub kind: ParameterKind,
-    /// Static type of the parameter. It is never `UnresolvedThingy`
+    /// Static type of the parameter. It is never `UnresolvedEntity`
     /// as function types are only created after all compound types
     /// are resolved.
-    pub static_type: Thingy,
+    pub static_type: Entity,
 }
 
 impl SemanticFunctionTypeParameter {
     /// Performs type substitution.
-    pub fn type_substitution(&self, host: &Database, type_params: &SharedArray<Thingy>, substitute_types: &SharedArray<Thingy>) -> Self {
+    pub fn apply_type(&self, host: &Database, type_params: &SharedArray<Entity>, substitute_types: &SharedArray<Entity>) -> Self {
         Self {
             kind: self.kind,
-            static_type: TypeSubstitution(host).exec(&self.static_type, type_params, substitute_types),
+            static_type: ApplyType(host).exec(&self.static_type, type_params, substitute_types),
         }
     }
 }
@@ -4081,13 +4079,13 @@ pub struct ControlFlowEdge {
 }
 
 // The third element is the descending most type.
-pub struct DescendingClassHierarchy<'a>(Option<Thingy>, &'a Database, Thingy);
+pub struct DescendingClassHierarchy<'a>(Option<Entity>, &'a Database, Entity);
 
 impl<'a> Iterator for DescendingClassHierarchy<'a> {
-    type Item = Thingy;
+    type Item = Entity;
     fn next(&mut self) -> Option<Self::Item> {
         if let Some(r) = self.0.clone() {
-            if r.is::<UnresolvedThingy>() {
+            if r.is::<UnresolvedEntity>() {
                 self.0 = None;
             } else {
                 self.0 = r.extends_class(self.1);
@@ -4102,10 +4100,10 @@ impl<'a> Iterator for DescendingClassHierarchy<'a> {
     }
 }
 
-pub struct DescendingScopeHierarchy(Option<Thingy>);
+pub struct DescendingScopeHierarchy(Option<Entity>);
 
 impl Iterator for DescendingScopeHierarchy {
-    type Item = Thingy;
+    type Item = Entity;
     fn next(&mut self) -> Option<Self::Item> {
         if let Some(r) = self.0.clone() {
             self.0 = r.parent();
@@ -4116,10 +4114,10 @@ impl Iterator for DescendingScopeHierarchy {
     }
 }
 
-pub struct DescendingDefinitionHierarchy(Option<Thingy>);
+pub struct DescendingDefinitionHierarchy(Option<Entity>);
 
 impl Iterator for DescendingDefinitionHierarchy {
-    type Item = Thingy;
+    type Item = Entity;
     fn next(&mut self) -> Option<Self::Item> {
         if let Some(r) = self.0.clone() {
             self.0 = r.parent();
@@ -4132,8 +4130,8 @@ impl Iterator for DescendingDefinitionHierarchy {
 
 #[derive(Clone)]
 pub struct Event {
-    pub data_type: Thingy,
-    pub constant: Option<Thingy>,
+    pub data_type: Entity,
+    pub constant: Option<Entity>,
     pub bubbles: Option<bool>,
 }
 

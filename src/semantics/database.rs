@@ -1,87 +1,87 @@
 use crate::ns::*;
 
 pub struct Database {
-    pub(crate) arena: ThingyArena,
-    node_mapping: TreeSemantics<Thingy>,
-    node_invalidation_mapping: TreeSemantics<()>,
+    pub(crate) arena: EntityArena,
+    node_mapping: NodeAssignment<Entity>,
+    node_invalidation_mapping: NodeAssignment<()>,
     project_path: Option<String>,
     config_constants: SharedMap<String, String>,
-    config_constants_result: SharedMap<String, Thingy>,
+    config_constants_result: SharedMap<String, Entity>,
     env_cache: RefCell<Option<Rc<HashMap<String, String>>>>,
 
-    unused_things: Rc<RefCell<Vec<Thingy>>>,
+    unused_things: Rc<RefCell<Vec<Entity>>>,
 
-    pub(crate) explicit_namespaces: RefCell<HashMap<String, Thingy>>,
-    pub(crate) user_namespaces: RefCell<HashMap<String, Thingy>>,
-    pub(crate) qnames: RefCell<HashMap<Thingy, HashMap<String, QName>>>,
+    pub(crate) explicit_namespaces: RefCell<HashMap<String, Entity>>,
+    pub(crate) user_namespaces: RefCell<HashMap<String, Entity>>,
+    pub(crate) qnames: RefCell<HashMap<Entity, HashMap<String, QName>>>,
 
-    invalidation_thingy: Thingy,
-    unresolved_thingy: Thingy,
-    pub(crate) top_level_package: Thingy,
-    as3_vec_package: RefCell<Option<Thingy>>,
-    mxmlextrema_utils_package: RefCell<Option<Thingy>>,
-    any_type: Thingy,
-    void_type: Thingy,
-    object_type: RefCell<Option<Thingy>>,
-    boolean_type: RefCell<Option<Thingy>>,
-    number_type: RefCell<Option<Thingy>>,
-    int_type: RefCell<Option<Thingy>>,
-    uint_type: RefCell<Option<Thingy>>,
-    float_type: RefCell<Option<Thingy>>,
-    string_type: RefCell<Option<Thingy>>,
-    array_type: RefCell<Option<Thingy>>,
-    namespace_type: RefCell<Option<Thingy>>,
-    function_type: RefCell<Option<Thingy>>,
-    class_type: RefCell<Option<Thingy>>,
-    xml_type: RefCell<Option<Thingy>>,
-    xml_list_type: RefCell<Option<Thingy>>,
-    reg_exp_type: RefCell<Option<Thingy>>,
-    date_type: RefCell<Option<Thingy>>,
-    promise_type: RefCell<Option<Thingy>>,
-    vector_type: RefCell<Option<Thingy>>,
-    proxy_type: RefCell<Option<Thingy>>,
-    dictionary_type: RefCell<Option<Thingy>>,
-    flash_proxy_ns: RefCell<Option<Thingy>>,
-    as3_ns: RefCell<Option<Thingy>>,
+    invalidation_entity: Entity,
+    unresolved_entity: Entity,
+    pub(crate) top_level_package: Entity,
+    as3_vec_package: RefCell<Option<Entity>>,
+    mxmlextrema_utils_package: RefCell<Option<Entity>>,
+    any_type: Entity,
+    void_type: Entity,
+    object_type: RefCell<Option<Entity>>,
+    boolean_type: RefCell<Option<Entity>>,
+    number_type: RefCell<Option<Entity>>,
+    int_type: RefCell<Option<Entity>>,
+    uint_type: RefCell<Option<Entity>>,
+    float_type: RefCell<Option<Entity>>,
+    string_type: RefCell<Option<Entity>>,
+    array_type: RefCell<Option<Entity>>,
+    namespace_type: RefCell<Option<Entity>>,
+    function_type: RefCell<Option<Entity>>,
+    class_type: RefCell<Option<Entity>>,
+    xml_type: RefCell<Option<Entity>>,
+    xml_list_type: RefCell<Option<Entity>>,
+    reg_exp_type: RefCell<Option<Entity>>,
+    date_type: RefCell<Option<Entity>>,
+    promise_type: RefCell<Option<Entity>>,
+    vector_type: RefCell<Option<Entity>>,
+    proxy_type: RefCell<Option<Entity>>,
+    dictionary_type: RefCell<Option<Entity>>,
+    flash_proxy_ns: RefCell<Option<Entity>>,
+    as3_ns: RefCell<Option<Entity>>,
     empty_empty_qname: RefCell<Option<QName>>,
-    const_eval_scope: RefCell<Option<Thingy>>,
+    const_eval_scope: RefCell<Option<Entity>>,
 
-    meta_prop: Thingy,
-    meta_env_prop: Thingy,
+    meta_prop: Entity,
+    meta_env_prop: Entity,
 
-    primitive_types: RefCell<Option<Rc<Vec<Thingy>>>>,
-    non_null_primitive_types: RefCell<Option<Rc<Vec<Thingy>>>>,
-    numeric_types: RefCell<Option<Rc<Vec<Thingy>>>>,
-    floating_point_types: RefCell<Option<Rc<Vec<Thingy>>>>,
-    integer_types: RefCell<Option<Rc<Vec<Thingy>>>>,
-    pub(crate) types_after_sub: RefCell<HashMap<Thingy, Vec<Thingy>>>,
-    pub(crate) function_types: RefCell<HashMap<usize, Vec<Thingy>>>,
-    pub(crate) tuple_types: RefCell<HashMap<usize, Vec<Thingy>>>,
-    pub(crate) nullable_types: RefCell<HashMap<Thingy, Thingy>>,
-    pub(crate) non_nullable_types: RefCell<HashMap<Thingy, Thingy>>,
+    primitive_types: RefCell<Option<Rc<Vec<Entity>>>>,
+    non_null_primitive_types: RefCell<Option<Rc<Vec<Entity>>>>,
+    numeric_types: RefCell<Option<Rc<Vec<Entity>>>>,
+    floating_point_types: RefCell<Option<Rc<Vec<Entity>>>>,
+    integer_types: RefCell<Option<Rc<Vec<Entity>>>>,
+    pub(crate) types_after_sub: RefCell<HashMap<Entity, Vec<Entity>>>,
+    pub(crate) function_types: RefCell<HashMap<usize, Vec<Entity>>>,
+    pub(crate) tuple_types: RefCell<HashMap<usize, Vec<Entity>>>,
+    pub(crate) nullable_types: RefCell<HashMap<Entity, Entity>>,
+    pub(crate) non_nullable_types: RefCell<HashMap<Entity, Entity>>,
     // Slots after indirect type substitution (variable, method, and virtual slots).
-    pub(crate) vasub: RefCell<HashMap<Thingy, HashMap<SharedArray<Thingy>, Vec<Thingy>>>>,
-    pub(crate) visub: RefCell<HashMap<Thingy, HashMap<SharedArray<Thingy>, Vec<Thingy>>>>,
-    pub(crate) mssub: RefCell<HashMap<Thingy, HashMap<SharedArray<Thingy>, Vec<Thingy>>>>,
+    pub(crate) vasub: RefCell<HashMap<Entity, HashMap<SharedArray<Entity>, Vec<Entity>>>>,
+    pub(crate) visub: RefCell<HashMap<Entity, HashMap<SharedArray<Entity>, Vec<Entity>>>>,
+    pub(crate) mssub: RefCell<HashMap<Entity, HashMap<SharedArray<Entity>, Vec<Entity>>>>,
 }
 
 impl Database {
     pub fn new(options: DatabaseOptions) -> Self {
-        let arena = ThingyArena::new();
+        let arena = EntityArena::new();
         let explicit_namespaces = RefCell::new(HashMap::new());
         let user_namespaces = RefCell::new(HashMap::new());
         let qnames = RefCell::new(HashMap::new());
-        let any_type: Thingy = AnyType::new(&arena).into();
-        let void_type: Thingy = VoidType::new(&arena).into();
-        let invalidation_thingy: Thingy = InvalidationThingy::new(&arena).into();
-        let unresolved_thingy: Thingy = UnresolvedThingy::new(&arena).into();
+        let any_type: Entity = AnyType::new(&arena).into();
+        let void_type: Entity = VoidType::new(&arena).into();
+        let invalidation_entity: Entity = InvalidationEntity::new(&arena).into();
+        let unresolved_entity: Entity = UnresolvedEntity::new(&arena).into();
         let top_level_package = Package::new(&arena, "".into());
-        let meta_prop: Thingy = MetaProperty::new(&arena, &any_type).into();
-        let meta_env_prop: Thingy = MetaEnvProperty::new(&arena, &any_type).into();
+        let meta_prop: Entity = MetaProperty::new(&arena, &any_type).into();
+        let meta_env_prop: Entity = MetaEnvProperty::new(&arena, &any_type).into();
         let host = Self {
             arena,
-            node_mapping: TreeSemantics::new(),
-            node_invalidation_mapping: TreeSemantics::new(),
+            node_mapping: NodeAssignment::new(),
+            node_invalidation_mapping: NodeAssignment::new(),
             project_path: options.project_path.clone(),
             config_constants: SharedMap::new(),
             config_constants_result: SharedMap::new(),
@@ -93,8 +93,8 @@ impl Database {
             top_level_package: top_level_package.clone().into(),
             as3_vec_package: RefCell::new(None),
             mxmlextrema_utils_package: RefCell::new(None),
-            invalidation_thingy,
-            unresolved_thingy,
+            invalidation_entity,
+            unresolved_entity,
 
             unused_things: Rc::new(RefCell::new(vec![])),
 
@@ -165,31 +165,31 @@ impl Database {
     }
 
     #[inline(always)]
-    pub fn factory(&self) -> ThingyFactory {
-        ThingyFactory(self)
+    pub fn factory(&self) -> Factory {
+        Factory(self)
     }
 
     /// Mapping from a node to something in the semantic model.
     #[inline(always)]
-    pub fn node_mapping(&self) -> &TreeSemantics<Thingy> {
+    pub fn node_mapping(&self) -> &NodeAssignment<Entity> {
         &self.node_mapping
     }
 
     /// Mapping from a node to an unit indicating invalidation.
     #[inline(always)]
-    pub fn node_invalidation_mapping(&self) -> &TreeSemantics<()> {
+    pub fn node_invalidation_mapping(&self) -> &NodeAssignment<()> {
         &self.node_invalidation_mapping
     }
 
-    pub fn lazy_node_mapping<T>(&self, node: &Rc<T>, init: impl FnOnce() -> Thingy) -> Thingy
-        where TreeSemantics<Thingy>: TreeSemanticsAccessor<T, Thingy>
+    pub fn lazy_node_mapping<T>(&self, node: &Rc<T>, init: impl FnOnce() -> Entity) -> Entity
+        where NodeAssignment<Entity>: NodeAssignmentMethod<T, Entity>
     {
         if let Some(m) = self.node_mapping().get(node) {
             m
         } else {
-            let thingy = init();
-            self.node_mapping().set(node, Some(thingy.clone()));
-            thingy
+            let entity = init();
+            self.node_mapping().set(node, Some(entity.clone()));
+            entity
         }
     }
 
@@ -208,7 +208,7 @@ impl Database {
     /// The mapping of configuration constants to their verification
     /// result.
     #[inline(always)]
-    pub fn config_constants_result(&self) -> SharedMap<String, Thingy> {
+    pub fn config_constants_result(&self) -> SharedMap<String, Entity> {
         self.config_constants_result.clone()
     }
 
@@ -217,15 +217,15 @@ impl Database {
     }
 
     /// Default scope used for the evaluation of configuration constants.
-    pub fn const_eval_scope(&self) -> Thingy {
+    pub fn const_eval_scope(&self) -> Entity {
         self.const_eval_scope.borrow().as_ref().unwrap().clone()
     }
 
-    pub fn top_level_package(&self) -> Thingy {
+    pub fn top_level_package(&self) -> Entity {
         self.top_level_package.clone()
     }
 
-    pub fn as3_vec_package(&self) -> Thingy {
+    pub fn as3_vec_package(&self) -> Entity {
         if let Some(p) = self.as3_vec_package.borrow().as_ref() {
             return p.clone();
         }
@@ -234,7 +234,7 @@ impl Database {
         p
     }
 
-    pub fn mxmlextrema_utils_package(&self) -> Thingy {
+    pub fn mxmlextrema_utils_package(&self) -> Entity {
         if let Some(p) = self.mxmlextrema_utils_package.borrow().as_ref() {
             return p.clone();
         }
@@ -243,27 +243,27 @@ impl Database {
         p
     }
 
-    pub fn invalidation_thingy(&self) -> Thingy {
-        self.invalidation_thingy.clone()
+    pub fn invalidation_entity(&self) -> Entity {
+        self.invalidation_entity.clone()
     }
 
-    pub fn unresolved_thingy(&self) -> Thingy {
-        self.unresolved_thingy.clone()
+    pub fn unresolved_entity(&self) -> Entity {
+        self.unresolved_entity.clone()
     }
 
-    pub fn any_type(&self) -> Thingy {
+    pub fn any_type(&self) -> Entity {
         self.any_type.clone()
     }
 
-    pub fn void_type(&self) -> Thingy {
+    pub fn void_type(&self) -> Entity {
         self.void_type.clone()
     }
 
-    pub fn meta_property(&self) -> Thingy {
+    pub fn meta_property(&self) -> Entity {
         self.meta_prop.clone()
     }
 
-    pub fn meta_env_property(&self) -> Thingy {
+    pub fn meta_env_property(&self) -> Entity {
         self.meta_env_prop.clone()
     }
 
@@ -284,23 +284,23 @@ impl Database {
     global_lookup!(date_type, "Date");
     global_lookup!(promise_type, "Promise");
 
-    pub fn array_type_of_any(&self) -> Result<Thingy, DeferError> {
+    pub fn array_type_of_any(&self) -> Result<Entity, DeferError> {
         let origin = self.array_type().defer()?;
         Ok(self.factory().create_type_after_substitution(&origin, &shared_array![self.any_type()]))
     }
 
-    pub fn promise_type_of_any(&self) -> Result<Thingy, DeferError> {
+    pub fn promise_type_of_any(&self) -> Result<Entity, DeferError> {
         let origin = self.promise_type().defer()?;
         Ok(self.factory().create_type_after_substitution(&origin, &shared_array![self.any_type()]))
     }
 
-    pub fn vector_type_of_any(&self) -> Result<Thingy, DeferError> {
+    pub fn vector_type_of_any(&self) -> Result<Entity, DeferError> {
         let origin = self.vector_type().defer()?;
         Ok(self.factory().create_type_after_substitution(&origin, &shared_array![self.any_type()]))
     }
 
     /// Retrieves `__AS3__.vec.Vector`, a possibly unresolved thing.
-    pub fn vector_type(&self) -> Thingy {
+    pub fn vector_type(&self) -> Entity {
         if let Some(r) = self.vector_type.borrow().as_ref() {
             return r.clone();
         }
@@ -309,12 +309,12 @@ impl Database {
             self.vector_type.replace(Some(r.clone()));
             r
         } else {
-            self.unresolved_thingy()
+            self.unresolved_entity()
         }
     }
 
     /// Retrieves `mxmlextrema.utils.Proxy`, a possibly unresolved thing.
-    pub fn proxy_type(&self) -> Thingy {
+    pub fn proxy_type(&self) -> Entity {
         if let Some(r) = self.proxy_type.borrow().as_ref() {
             return r.clone();
         }
@@ -323,12 +323,12 @@ impl Database {
             self.proxy_type.replace(Some(r.clone()));
             r
         } else {
-            self.unresolved_thingy()
+            self.unresolved_entity()
         }
     }
 
     /// Retrieves `mxmlextrema.utils.Dictionary`, a possibly unresolved thing.
-    pub fn dictionary_type(&self) -> Thingy {
+    pub fn dictionary_type(&self) -> Entity {
         if let Some(r) = self.dictionary_type.borrow().as_ref() {
             return r.clone();
         }
@@ -337,22 +337,22 @@ impl Database {
             self.dictionary_type.replace(Some(r.clone()));
             r
         } else {
-            self.unresolved_thingy()
+            self.unresolved_entity()
         }
     }
 
     /// The `mxmlextrema.utils.flash_proxy` namespace.
-    pub fn flash_proxy_ns(&self) -> Thingy {
+    pub fn flash_proxy_ns(&self) -> Entity {
         self.flash_proxy_ns.borrow().as_ref().unwrap().clone()
     }
 
     /// The `AS3` namespace.
-    pub fn as3_ns(&self) -> Thingy {
+    pub fn as3_ns(&self) -> Entity {
         self.as3_ns.borrow().as_ref().unwrap().clone()
     }
 
     /// Returns the set (`void`, `String`, `Boolean`, `Number`, `int`, `uint`, `float`).
-    pub fn primitive_types(&self) -> Result<Rc<Vec<Thingy>>, DeferError> {
+    pub fn primitive_types(&self) -> Result<Rc<Vec<Entity>>, DeferError> {
         if let Some(r) = self.primitive_types.borrow().as_ref() {
             return Ok(r.clone());
         }
@@ -370,7 +370,7 @@ impl Database {
     }
 
     /// Returns the set (`Boolean`, `Number`, `int`, `uint`, `float`).
-    pub fn non_null_primitive_types(&self) -> Result<Rc<Vec<Thingy>>, DeferError> {
+    pub fn non_null_primitive_types(&self) -> Result<Rc<Vec<Entity>>, DeferError> {
         if let Some(r) = self.non_null_primitive_types.borrow().as_ref() {
             return Ok(r.clone());
         }
@@ -385,7 +385,7 @@ impl Database {
         Ok(r)
     }
 
-    pub fn numeric_types(&self) -> Result<Rc<Vec<Thingy>>, DeferError> {
+    pub fn numeric_types(&self) -> Result<Rc<Vec<Entity>>, DeferError> {
         if let Some(r) = self.numeric_types.borrow().as_ref() {
             return Ok(r.clone());
         }
@@ -399,7 +399,7 @@ impl Database {
         Ok(r)
     }
 
-    pub fn floating_point_types(&self) -> Result<Rc<Vec<Thingy>>, DeferError> {
+    pub fn floating_point_types(&self) -> Result<Rc<Vec<Entity>>, DeferError> {
         if let Some(r) = self.floating_point_types.borrow().as_ref() {
             return Ok(r.clone());
         }
@@ -411,7 +411,7 @@ impl Database {
         Ok(r)
     }
 
-    pub fn integer_types(&self) -> Result<Rc<Vec<Thingy>>, DeferError> {
+    pub fn integer_types(&self) -> Result<Rc<Vec<Entity>>, DeferError> {
         if let Some(r) = self.integer_types.borrow().as_ref() {
             return Ok(r.clone());
         }
@@ -444,19 +444,19 @@ impl Database {
         r
     }
 
-    pub(crate) fn unused_things(&self) -> std::cell::Ref<Vec<Thingy>> {
+    pub(crate) fn unused_things(&self) -> std::cell::Ref<Vec<Entity>> {
         self.unused_things.borrow()
     }
 
-    pub(crate) fn is_unused(&self, thingy: &Thingy) -> bool {
-        self.unused_things.borrow().contains(thingy)
+    pub(crate) fn is_unused(&self, entity: &Entity) -> bool {
+        self.unused_things.borrow().contains(entity)
     }
 
-    pub(crate) fn add_unused_thing(&self, thing: &Thingy) {
+    pub(crate) fn add_unused_thing(&self, thing: &Entity) {
         self.unused_things.borrow_mut().push(thing.clone());
     }
 
-    pub(crate) fn remove_unused_thing(&self, thing: &Thingy) {
+    pub(crate) fn remove_unused_thing(&self, thing: &Entity) {
         let mut i = 0usize;
         let mut things = self.unused_things.borrow_mut();
         for t1 in things.iter() {
@@ -487,7 +487,7 @@ impl Default for DatabaseOptions {
 macro global_lookup {
     ($field:ident, $as3name:expr) => {
         /// Retrieves a possibly unresolved thing.
-        pub fn $field(&self) -> Thingy {
+        pub fn $field(&self) -> Entity {
             if let Some(r) = self.$field.borrow().as_ref() {
                 return r.clone();
             }
@@ -495,7 +495,7 @@ macro global_lookup {
                 self.$field.replace(Some(r.clone()));
                 r
             } else {
-                self.unresolved_thingy()
+                self.unresolved_entity()
             }
         }
     },

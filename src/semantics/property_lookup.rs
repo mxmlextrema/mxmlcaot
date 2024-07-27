@@ -5,11 +5,11 @@ pub struct PropertyLookup<'a>(pub &'a Database);
 #[derive(Clone)]
 pub enum PropertyLookupKey {
     LocalName(String),
-    Computed(Thingy),
+    Computed(Entity),
 }
 
 impl PropertyLookupKey {
-    pub fn computed_or_local_name(&self, host: &Database) -> Result<Thingy, DeferError> {
+    pub fn computed_or_local_name(&self, host: &Database) -> Result<Entity, DeferError> {
         match self {
             Self::LocalName(s) => {
                 let string_type = host.string_type().defer()?;
@@ -19,7 +19,7 @@ impl PropertyLookupKey {
         }
     }
 
-    pub fn static_type(&self, host: &Database) -> Result<Thingy, DeferError> {
+    pub fn static_type(&self, host: &Database) -> Result<Entity, DeferError> {
         match self {
             Self::LocalName(_) => host.string_type().defer(),
             Self::Computed(s) => s.static_type(host).defer(),
@@ -47,11 +47,11 @@ impl PropertyLookupKey {
     }
 }
 
-fn defer(thingy: &Thingy) -> Result<Thingy, PropertyLookupError> {
-    if thingy.is::<UnresolvedThingy>() {
+fn defer(entity: &Entity) -> Result<Entity, PropertyLookupError> {
+    if entity.is::<UnresolvedEntity>() {
         Err(PropertyLookupError::Defer)
     } else {
-        Ok(thingy.clone())
+        Ok(entity.clone())
     }
 }
 
@@ -60,8 +60,8 @@ fn map_defer_error<T>(result: Result<T, DeferError>) -> Result<T, PropertyLookup
 }
 
 impl<'a> PropertyLookup<'a> {
-    pub fn lookup_in_object(&self, base: &Thingy, open_ns_set: &SharedArray<Thingy>, qual: Option<Thingy>, key: &PropertyLookupKey) -> Result<Option<Thingy>, PropertyLookupError> {
-        if base.is::<InvalidationThingy>() {
+    pub fn lookup_in_object(&self, base: &Entity, open_ns_set: &SharedArray<Entity>, qual: Option<Entity>, key: &PropertyLookupKey) -> Result<Option<Entity>, PropertyLookupError> {
+        if base.is::<InvalidationEntity>() {
             return Ok(Some(base.clone()));
         }
         let local_name = key.local_name();
@@ -121,7 +121,7 @@ impl<'a> PropertyLookup<'a> {
             let base_type = defer(&base.static_type(self.0))?;
             let base_esc_type = base_type.escape_of_non_nullable();
 
-            if base_esc_type.is::<InvalidationThingy>() {
+            if base_esc_type.is::<InvalidationEntity>() {
                 return Ok(Some(base_esc_type.clone()));
             }
 
@@ -136,7 +136,7 @@ impl<'a> PropertyLookup<'a> {
             let Some(local_name) = local_name else {
                 // Attempt to index Array
                 if let Some(_) = map_defer_error(base_esc_type.array_element_type(self.0))? {
-                    let iv: Option<Thingy> = map_defer_error(TypeConversions(self.0).implicit(&map_defer_error(key.computed_or_local_name(self.0))?, &defer(&self.0.number_type())?, false))?;
+                    let iv: Option<Entity> = map_defer_error(ConversionMethods(self.0).implicit(&map_defer_error(key.computed_or_local_name(self.0))?, &defer(&self.0.number_type())?, false))?;
                     if let Some(iv) = iv {
                         return Ok(Some(map_defer_error(self.0.factory().create_array_element_reference_value(&base, &iv))?));
                     }
@@ -144,7 +144,7 @@ impl<'a> PropertyLookup<'a> {
 
                 // Attempt to index Vector
                 if let Some(_) = map_defer_error(base_esc_type.vector_element_type(self.0))? {
-                    let iv: Option<Thingy> = map_defer_error(TypeConversions(self.0).implicit(&map_defer_error(key.computed_or_local_name(self.0))?, &defer(&self.0.number_type())?, false))?;
+                    let iv: Option<Entity> = map_defer_error(ConversionMethods(self.0).implicit(&map_defer_error(key.computed_or_local_name(self.0))?, &defer(&self.0.number_type())?, false))?;
                     if let Some(iv) = iv {
                         return Ok(Some(map_defer_error(self.0.factory().create_vector_element_reference_value(&base, &iv))?));
                     }
@@ -251,7 +251,7 @@ impl<'a> PropertyLookup<'a> {
                 return Ok(None);
             }
 
-            let mut r: Option<Thingy> = None;
+            let mut r: Option<Entity> = None;
 
             let prop = self.get_qname_in_ns_set_or_any_public_ns(&base.properties(self.0), open_ns_set, qual.clone(), &local_name)?;
 
@@ -284,7 +284,7 @@ impl<'a> PropertyLookup<'a> {
         Ok(None)
     }
 
-    pub fn lookup_in_scope_chain(&self, scope: &Thingy, qual: Option<Thingy>, key: &PropertyLookupKey) -> Result<Option<Thingy>, PropertyLookupError> {
+    pub fn lookup_in_scope_chain(&self, scope: &Entity, qual: Option<Entity>, key: &PropertyLookupKey) -> Result<Option<Entity>, PropertyLookupError> {
         let open_ns_set = scope.concat_open_ns_set_of_scope_chain();
 
         // If the key is computed, always return dynamic
@@ -335,7 +335,7 @@ impl<'a> PropertyLookup<'a> {
         }
 
         // Let r be the last assigned lookup success result.
-        let mut r: Option<Thingy> = None;
+        let mut r: Option<Entity> = None;
 
         if has_known_ns && local_name.is_some() {
             r = self.get_qname_in_ns_set_or_any_public_ns(&scope.properties(self.0), &open_ns_set, qual.clone(), local_name.as_ref().unwrap())?;
@@ -371,7 +371,7 @@ impl<'a> PropertyLookup<'a> {
             }
         }
 
-        let mut amb: Option<Thingy>;
+        let mut amb: Option<Entity>;
 
         // For a package scope
         if scope.is::<PackageScope>() && has_known_ns && local_name.is_some() {
@@ -408,7 +408,7 @@ impl<'a> PropertyLookup<'a> {
                     } else {
                         assert!(import.is::<PackagePropertyImport>());
                         let prop = map_defer_error(import.property().defer())?;
-                        if prop.is::<InvalidationThingy>() {
+                        if prop.is::<InvalidationEntity>() {
                             continue;
                         }
                         if prop.name().matches_in_ns_set_or_any_public_ns(&open_ns_set, &local_name) {
@@ -439,7 +439,7 @@ impl<'a> PropertyLookup<'a> {
     }
 
     /// Qualifier is assumed to be a compile-time namespace.
-    pub fn get_qname_in_ns_set_or_any_public_ns(&self, mapping: &NameMap, open_ns_set: &SharedArray<Thingy>, qual: Option<Thingy>, local_name: &str) -> Result<Option<Thingy>, PropertyLookupError> {
+    pub fn get_qname_in_ns_set_or_any_public_ns(&self, mapping: &Names, open_ns_set: &SharedArray<Entity>, qual: Option<Entity>, local_name: &str) -> Result<Option<Entity>, PropertyLookupError> {
         if let Some(qual) = qual {
             if qual.is::<PackageWildcardImport>() || qual.is::<PackageRecursiveImport>() {
                 return Ok(None);
@@ -463,7 +463,7 @@ impl<'a> PropertyLookup<'a> {
         }
     }
 
-    pub fn lookup_in_package_recursive(&self, package: &Thingy, open_ns_set: &SharedArray<Thingy>, qual: Option<Thingy>, local_name: &PropertyLookupKey) -> Result<Option<Thingy>, PropertyLookupError> {
+    pub fn lookup_in_package_recursive(&self, package: &Entity, open_ns_set: &SharedArray<Entity>, qual: Option<Entity>, local_name: &PropertyLookupKey) -> Result<Option<Entity>, PropertyLookupError> {
         let mut r = self.lookup_in_object(&package, &open_ns_set, qual.clone(), local_name)?;
 
         for (_, subpackage) in package.subpackages().borrow().iter() {

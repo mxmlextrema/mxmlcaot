@@ -1,24 +1,24 @@
 use crate::ns::*;
 
-pub struct MethodOverriding<'a>(pub &'a Database);
+pub struct MethodOverride<'a>(pub &'a Database);
 
-impl<'a> MethodOverriding<'a> {
+impl<'a> MethodOverride<'a> {
     /// Returns a listing of abstract methods that were not overriden.
     /// The resulting list may include method slots which are getters or setters
     /// from a virtual slot.
-    pub fn abstract_methods_not_overriden(&mut self, class: &Thingy, ns_set: &SharedArray<Thingy>) -> Result<Vec<Thingy>, DeferError> {
+    pub fn abstract_methods_not_overriden(&mut self, class: &Entity, ns_set: &SharedArray<Entity>) -> Result<Vec<Entity>, DeferError> {
         let base_class = class.extends_class(self.0);
         if base_class.is_none() {
             return Ok(vec![]);
         }
         let base_class = base_class.unwrap();
-        if base_class.is::<UnresolvedThingy>() {
+        if base_class.is::<UnresolvedEntity>() {
             return Err(DeferError(None));
         }
         if &base_class == class {
             return Ok(vec![]);
         }
-        let mut r: Vec<Thingy> = vec![];
+        let mut r: Vec<Entity> = vec![];
         for (name, prop) in base_class.prototype(self.0).borrow().iter() {
             // Regular method
             if prop.is::<MethodSlot>() {
@@ -50,14 +50,14 @@ impl<'a> MethodOverriding<'a> {
         Ok(r)
     }
 
-    pub fn override_method(&mut self, method: &Thingy, ns_set: &SharedArray<Thingy>) -> Result<(), MethodOverridingError> {
+    pub fn override_method(&mut self, method: &Entity, ns_set: &SharedArray<Entity>) -> Result<(), MethodOverrideError> {
         let name = method.name();
         let class = method.parent().unwrap();
         assert!(class.is::<ClassType>() || class.is::<EnumType>());
 
         let base_type = class.extends_class(self.0);
         if base_type.is_none() {
-            return Err(MethodOverridingError::MustOverrideAMethod);
+            return Err(MethodOverrideError::MustOverrideAMethod);
         }
         let base_type = base_type.unwrap();
         if base_type == class {
@@ -65,7 +65,7 @@ impl<'a> MethodOverriding<'a> {
         }
         let base_method = self.lookup_method(&name, &base_type, ns_set)?;
         if base_method.is_none() {
-            return Err(MethodOverridingError::MustOverrideAMethod);
+            return Err(MethodOverrideError::MustOverrideAMethod);
         }
         let mut base_method = base_method.unwrap();
         
@@ -75,38 +75,38 @@ impl<'a> MethodOverriding<'a> {
             if is_getter {
                 // Overriding a getter
                 if !(base_method.is::<VirtualSlot>() && base_method.getter(self.0).is_some()) {
-                    return Err(MethodOverridingError::MustOverrideAMethod);
+                    return Err(MethodOverrideError::MustOverrideAMethod);
                 }
                 base_method = base_method.getter(self.0).unwrap();
             } else {
                 // Overriding a setter
                 if !(base_method.is::<VirtualSlot>() && base_method.setter(self.0).is_some()) {
-                    return Err(MethodOverridingError::MustOverrideAMethod);
+                    return Err(MethodOverrideError::MustOverrideAMethod);
                 }
                 base_method = base_method.setter(self.0).unwrap();
             }
         // Overriding a regular method
         } else if !base_method.is::<MethodSlot>() {
-            return Err(MethodOverridingError::MustOverrideAMethod);
+            return Err(MethodOverrideError::MustOverrideAMethod);
         }
 
         // Retrieve base type method's signature. Defer.
         let base_signature = base_method.signature(self.0);
-        base_signature.defer().map_err(|_| MethodOverridingError::Defer)?;
+        base_signature.defer().map_err(|_| MethodOverrideError::Defer)?;
 
         // Retrieve subtype method's signature. Defer.
         let subtype_signature = method.signature(self.0);
-        subtype_signature.defer().map_err(|_| MethodOverridingError::Defer)?;
+        subtype_signature.defer().map_err(|_| MethodOverrideError::Defer)?;
 
         if !self.compatible_override(&base_signature, &subtype_signature) {
-            return Err(MethodOverridingError::IncompatibleOverride {
+            return Err(MethodOverrideError::IncompatibleOverride {
                 expected_signature: base_signature,
                 actual_signature: subtype_signature,
             });
         }
 
         if base_method.is_final() {
-            return Err(MethodOverridingError::OverridingFinalMethod);
+            return Err(MethodOverrideError::OverridingFinalMethod);
         }
 
         base_method.overriden_by(self.0).push(method.clone());
@@ -114,10 +114,10 @@ impl<'a> MethodOverriding<'a> {
         Ok(())
     }
 
-    fn lookup_method(&mut self, name: &QName, base_type: &Thingy, ns_set: &SharedArray<Thingy>) -> Result<Option<Thingy>, MethodOverridingError> {
+    fn lookup_method(&mut self, name: &QName, base_type: &Entity, ns_set: &SharedArray<Entity>) -> Result<Option<Entity>, MethodOverrideError> {
         for class in base_type.descending_class_hierarchy(self.0).collect::<Vec<_>>() {
             // Defer
-            class.defer().map_err(|_| MethodOverridingError::Defer)?;
+            class.defer().map_err(|_| MethodOverrideError::Defer)?;
 
             let prop = if name.namespace().is::<SystemNamespace>() {
                 class.prototype(self.0).get_in_system_ns_kind_in_ns_set(ns_set, name.namespace().system_ns_kind().unwrap(), &name.local_name()).ok().unwrap_or(None)
@@ -127,17 +127,17 @@ impl<'a> MethodOverriding<'a> {
 
             if let Some(prop) = prop {
                 // Defer
-                prop.property_static_type(self.0).defer().map_err(|_| MethodOverridingError::Defer)?;
+                prop.property_static_type(self.0).defer().map_err(|_| MethodOverrideError::Defer)?;
 
                 if prop.is::<VirtualSlot>() {
                     if let Some(getter) = prop.getter(self.0) {
                         // Defer
-                        getter.signature(self.0).defer().map_err(|_| MethodOverridingError::Defer)?;
+                        getter.signature(self.0).defer().map_err(|_| MethodOverrideError::Defer)?;
                     }
 
                     if let Some(setter) = prop.setter(self.0) {
                         // Defer
-                        setter.signature(self.0).defer().map_err(|_| MethodOverridingError::Defer)?;
+                        setter.signature(self.0).defer().map_err(|_| MethodOverrideError::Defer)?;
                     }
                 }
 
@@ -147,7 +147,7 @@ impl<'a> MethodOverriding<'a> {
         Ok(None)
     }
 
-    fn compatible_override(&mut self, base_signature: &Thingy, subtype_signature: &Thingy) -> bool {
+    fn compatible_override(&mut self, base_signature: &Entity, subtype_signature: &Entity) -> bool {
         base_signature == subtype_signature
     }
 }
