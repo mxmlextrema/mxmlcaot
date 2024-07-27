@@ -1,9 +1,9 @@
 [package]
-name = "mxmlextrema-as3query"
-version = "0.3.1"
+name = "mxmlextrema-semas3"
+version = "0.3.0"
 edition = "2021"
 authors = ["Matheus Dias de Souza <hydroperfox@gmail.com>"]
-repository = "https://github.com/mxmlextrema/as3query"
+repository = "https://github.com/mxmlextrema/semas3"
 keywords = ["actionscript", "as3", "actionscript3"]
 description = "Queries the ActionScript 3 language semantic data."
 license = "Apache-2.0"
@@ -11,7 +11,7 @@ license = "Apache-2.0"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [lib]
-name = "mxmlextrema_as3query"
+name = "mxmlextrema_semas3"
 path = "src/lib.rs"
 
 [dependencies]
