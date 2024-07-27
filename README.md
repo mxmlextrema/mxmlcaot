@@ -7,7 +7,7 @@
 
 mxmlextrema::as3query is a Rust library for creating, inspecting and modifying the semantic data of the ActionScript 3 language conforming to the Adobe AIR platform.
 
-mxmlextrema::as3query implements three dimensional names, property lookup, type conversion mechanism, variable number representations, interface implementation mechanism, method overriding mechanism, type substitution for parameterized types, an item factory, and several item representations (for example, classes, methods and variables).
+mxmlextrema::as3query implements three dimensional names, property lookup, conversion, number representation, interface implementation log, method overriding, applying parameterized types, a factory, and several entities (for example, classes, methods and variables).
 
 ## Example
 
