@@ -929,8 +929,8 @@ smodel! {
         }
 
         /// Lookups property in an object.
-        pub fn lookup_in_object(&self, host: &Database, open_ns_set: &SharedArray<Entity>, qual: Option<Entity>, key: &PropertyLookupKey) -> Result<Option<Entity>, PropertyLookupError> {
-            PropertyLookup(host).lookup_in_object(self, open_ns_set, qual, key)
+        pub fn lookup_in_object(&self, host: &Database, open_ns_set: &SharedArray<Entity>, qual: Option<Entity>, key: &PropertyLookupKey, calling: bool) -> Result<Option<Entity>, PropertyLookupError> {
+            PropertyLookup(host).lookup_in_object(self, open_ns_set, qual, key, calling)
         }
 
         /// Lookups property in the scope chain.

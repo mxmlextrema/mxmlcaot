@@ -60,7 +60,7 @@ fn map_defer_error<T>(result: Result<T, DeferError>) -> Result<T, PropertyLookup
 }
 
 impl<'a> PropertyLookup<'a> {
-    pub fn lookup_in_object(&self, base: &Entity, open_ns_set: &SharedArray<Entity>, qual: Option<Entity>, key: &PropertyLookupKey) -> Result<Option<Entity>, PropertyLookupError> {
+    pub fn lookup_in_object(&self, base: &Entity, open_ns_set: &SharedArray<Entity>, qual: Option<Entity>, key: &PropertyLookupKey, calling: bool) -> Result<Option<Entity>, PropertyLookupError> {
         if base.is::<InvalidationEntity>() {
             return Ok(Some(base.clone()));
         }
@@ -125,10 +125,13 @@ impl<'a> PropertyLookup<'a> {
                 return Ok(Some(base_esc_type.clone()));
             }
 
-            // If base is a value whose type is one of { XML, XML!, XMLList, XMLList! }, return a XML reference value.
-            if [defer(&self.0.xml_type())?, defer(&self.0.xml_list_type())?].contains(&base_esc_type) {
-                let k = map_defer_error(key.computed_or_local_name(self.0))?;
-                return Ok(Some(self.0.factory().create_xml_reference_value(base, qual, &k)));
+            // If not calling the property and base is a value whose type is one of
+            // { XML, XML!, XMLList, XMLList! }, return a XML reference value.
+            if !calling {
+                if [defer(&self.0.xml_type())?, defer(&self.0.xml_list_type())?].contains(&base_esc_type) {
+                    let k = map_defer_error(key.computed_or_local_name(self.0))?;
+                    return Ok(Some(self.0.factory().create_xml_reference_value(base, qual, &k)));
+                }
             }
 
             let has_known_ns = qual.as_ref().map(|q| q.is_namespace_or_ns_constant()).unwrap_or(true);
@@ -276,7 +279,7 @@ impl<'a> PropertyLookup<'a> {
             }
 
             for concatp in base.package_concats().iter() {
-                let r1 = self.lookup_in_object(&concatp, open_ns_set, qual.clone(), key)?;
+                let r1 = self.lookup_in_object(&concatp, open_ns_set, qual.clone(), key, calling)?;
                 if let Some(r1) = r1 {
                     if r.is_some() {
                         return Err(PropertyLookupError::AmbiguousReference(local_name));
@@ -310,7 +313,7 @@ impl<'a> PropertyLookup<'a> {
                 return Ok(Some(self.0.factory().create_dynamic_scope_reference_value(scope, qual, &k)));
             }
 
-            let r = self.lookup_in_object(&obj, &open_ns_set, qual.clone(), key)?;
+            let r = self.lookup_in_object(&obj, &open_ns_set, qual.clone(), key, calling)?;
             if let Some(r) = r {
                 return Ok(Some(r));
             }
@@ -330,7 +333,7 @@ impl<'a> PropertyLookup<'a> {
                 let Some(local_name) = local_name else {
                     return Ok(None);
                 };
-                return self.lookup_in_object(&qual.package(), &open_ns_set, None, &PropertyLookupKey::LocalName(local_name.clone()));
+                return self.lookup_in_object(&qual.package(), &open_ns_set, None, &PropertyLookupKey::LocalName(local_name.clone()), calling);
             }
 
             if qual.is::<PackageRecursiveImport>() {
@@ -359,7 +362,7 @@ impl<'a> PropertyLookup<'a> {
         }
 
         if scope.is::<Activation>() && scope.this().is_some() && r.is_none() {
-            let r1 = self.lookup_in_object(&scope.this().unwrap(), &open_ns_set, qual.clone(), key)?;
+            let r1 = self.lookup_in_object(&scope.this().unwrap(), &open_ns_set, qual.clone(), key, calling)?;
             if let Some(r1) = r1 {
                 if !(r1.is::<DynamicReferenceValue>() || r1.is::<XmlReferenceValue>()) {
                     r = Some(r1);
@@ -369,7 +372,7 @@ impl<'a> PropertyLookup<'a> {
 
         // If scope is a class or enum scope and a local name key is specified
         if (scope.is::<ClassScope>() || scope.is::<EnumScope>()) && local_name.is_some() {
-            let r1 = self.lookup_in_object(&scope.class(), &open_ns_set, qual.clone(), key)?;
+            let r1 = self.lookup_in_object(&scope.class(), &open_ns_set, qual.clone(), key, calling)?;
             if r1.is_some() {
                 if r.is_some() {
                     return Err(PropertyLookupError::AmbiguousReference(local_name.as_ref().unwrap().clone()));
@@ -382,7 +385,7 @@ impl<'a> PropertyLookup<'a> {
 
         // For a package scope
         if scope.is::<PackageScope>() && has_known_ns && local_name.is_some() {
-            amb = self.lookup_in_object(&scope.package(), &open_ns_set, qual.clone(), key)?;
+            amb = self.lookup_in_object(&scope.package(), &open_ns_set, qual.clone(), key, calling)?;
             if amb.is_some() {
                 if r.is_some() {
                     return Err(PropertyLookupError::AmbiguousReference(local_name.as_ref().unwrap().clone()));
@@ -395,7 +398,7 @@ impl<'a> PropertyLookup<'a> {
             if has_known_ns {
                 for import in scope.import_list().iter() {
                     if import.is::<PackageWildcardImport>() {
-                        amb = self.lookup_in_object(&import.package(), &open_ns_set, qual.clone(), key)?;
+                        amb = self.lookup_in_object(&import.package(), &open_ns_set, qual.clone(), key, calling)?;
                         if let Some(amb) = amb {
                             Unused(self.0).mark_used(&import);
                             if r.is_some() && !r.as_ref().unwrap().fixture_reference_value_equals(&amb) {
@@ -471,7 +474,7 @@ impl<'a> PropertyLookup<'a> {
     }
 
     pub fn lookup_in_package_recursive(&self, package: &Entity, open_ns_set: &SharedArray<Entity>, qual: Option<Entity>, local_name: &PropertyLookupKey) -> Result<Option<Entity>, PropertyLookupError> {
-        let mut r = self.lookup_in_object(&package, &open_ns_set, qual.clone(), local_name)?;
+        let mut r = self.lookup_in_object(&package, &open_ns_set, qual.clone(), local_name, calling)?;
 
         for (_, subpackage) in package.subpackages().borrow().iter() {
             let r1 = self.lookup_in_package_recursive(subpackage, open_ns_set, qual.clone(), local_name)?;
