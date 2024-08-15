@@ -19,6 +19,7 @@ pub struct Database {
     unresolved_entity: Entity,
     pub(crate) top_level_package: Entity,
     as3_vec_package: RefCell<Option<Entity>>,
+    mxmlextrema_utils_package_name: Vec<String>,
     mxmlextrema_utils_package: RefCell<Option<Entity>>,
     any_type: Entity,
     void_type: Entity,
@@ -41,7 +42,9 @@ pub struct Database {
     vector_type: RefCell<Option<Entity>>,
     proxy_type: RefCell<Option<Entity>>,
     dictionary_type: RefCell<Option<Entity>>,
-    flash_proxy_ns: RefCell<Option<Entity>>,
+    mxmlextrema_proxy_ns_prefix: String,
+    mxmlextrema_proxy_ns_uri: String,
+    mxmlextrema_proxy_ns: RefCell<Option<Entity>>,
     as3_ns: RefCell<Option<Entity>>,
     empty_empty_qname: RefCell<Option<QName>>,
     const_eval_scope: RefCell<Option<Entity>>,
@@ -92,6 +95,7 @@ impl Database {
             qnames,
             top_level_package: top_level_package.clone().into(),
             as3_vec_package: RefCell::new(None),
+            mxmlextrema_utils_package_name: options.mxmlextrema_utils_package_name,
             mxmlextrema_utils_package: RefCell::new(None),
             invalidation_entity,
             unresolved_entity,
@@ -122,7 +126,9 @@ impl Database {
             vector_type: RefCell::new(None),
             proxy_type: RefCell::new(None),
             dictionary_type: RefCell::new(None),
-            flash_proxy_ns: RefCell::new(None),
+            mxmlextrema_proxy_ns_prefix: options.mxmlextrema_proxy_ns_prefix,
+            mxmlextrema_proxy_ns_uri: options.mxmlextrema_proxy_ns_uri,
+            mxmlextrema_proxy_ns: RefCell::new(None),
             as3_ns: RefCell::new(None),
             empty_empty_qname: RefCell::new(None),
             const_eval_scope: RefCell::new(None),
@@ -146,11 +152,11 @@ impl Database {
         top_level_package.set_public_ns(Some(host.factory().create_public_ns(Some(top_level_package.clone().into()))));
         top_level_package.set_internal_ns(Some(host.factory().create_internal_ns(Some(top_level_package.clone().into()))));
 
-        // Initialize "flash_proxy" namespace
-        host.flash_proxy_ns.replace(Some(host.factory().create_user_ns("http://www.adobe.com/2006/actionscript/flash/proxy".into())));
+        // Initialize the proxy namespace ("flash_proxy" compliant)
+        host.mxmlextrema_proxy_ns.replace(Some(host.factory().create_user_ns(host.mxmlextrema_proxy_ns_uri.clone())));
 
         // Initialize the "AS3" namespace
-        host.as3_ns.replace(Some(host.factory().create_user_ns("http://adobe.com/AS3/2006/builtin".into())));
+        host.as3_ns.replace(Some(host.factory().create_user_ns(options.as3_ns_uri)));
 
         // Initialize empty-empty QName
         host.empty_empty_qname.replace(Some(host.factory().create_qname(&host.factory().create_user_ns("".into()), "".into())));
@@ -238,7 +244,7 @@ impl Database {
         if let Some(p) = self.mxmlextrema_utils_package.borrow().as_ref() {
             return p.clone();
         }
-        let p = self.factory().create_package(["flash", "utils"]);
+        let p = self.factory().create_package(self.mxmlextrema_utils_package_name);
         self.mxmlextrema_utils_package.replace(Some(p.clone()));
         p
     }
@@ -341,9 +347,9 @@ impl Database {
         }
     }
 
-    /// The `mxmlextrema.utils.flash_proxy` namespace.
-    pub fn flash_proxy_ns(&self) -> Entity {
-        self.flash_proxy_ns.borrow().as_ref().unwrap().clone()
+    /// The `mxmlextrema.utils.mxmlextrema_proxy` namespace.
+    pub fn mxmlextrema_proxy_ns(&self) -> Entity {
+        self.mxmlextrema_proxy_ns.borrow().as_ref().unwrap().clone()
     }
 
     /// The `AS3` namespace.
@@ -474,12 +480,26 @@ pub struct DatabaseOptions {
     /// The directory path of the main project being compiled,
     /// used for the `import.meta.env.EXAMPLE` accessors.
     pub project_path: Option<String>,
+
+    /// The "AS3" namespace URI. Default: `"http://adobe.com/AS3/2006/builtin"`.
+    pub as3_ns_uri: String,
+
+    /// The "flash_proxy" compliant namespace's prefix. Default: `"flash_proxy"`
+    pub mxmlextrema_proxy_ns_prefix: String,
+    /// The "flash_proxy" compliant namespace's URI. Default: `"http://www.adobe.com/2006/actionscript/flash/proxy"`
+    pub mxmlextrema_proxy_ns_uri: String,
+    /// The "flash.utils" semi compliant package name. Default: `["flash", "utils"]`
+    pub mxmlextrema_utils_package_name: Vec<String>,
 }
 
 impl Default for DatabaseOptions {
     fn default() -> Self {
         Self {
             project_path: None,
+            as3_ns_uri: "http://adobe.com/AS3/2006/builtin".into(),
+            mxmlextrema_proxy_ns_prefix: "flash_proxy".into(),
+            mxmlextrema_proxy_ns_uri: "http://www.adobe.com/2006/actionscript/flash/proxy".into(),
+            mxmlextrema_utils_package_name: vec!["flash".into(), "utils".into()],
         }
     }
 }

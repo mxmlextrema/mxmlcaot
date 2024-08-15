@@ -168,8 +168,6 @@ impl<'a> PropertyLookup<'a> {
             // return a dynamic reference value..
             let any_or_object = [self.0.any_type(), defer(&self.0.object_type())?].contains(&base_esc_type);
             if any_or_object
-            || map_defer_error(base_type.escape_of_non_nullable().is_dynamic_or_inherits_dynamic(self.0))?
-            || base_type.escape_of_non_nullable() == map_defer_error(self.0.dictionary_type().defer())?
             || !has_known_ns
             {
                 if qual.is_none() {
@@ -235,6 +233,15 @@ impl<'a> PropertyLookup<'a> {
                         return Ok(Some(map_defer_error(self.0.factory().create_instance_reference_value(&base, &prop))?));
                     }
                 }
+            }
+
+            // If base data type is a dynamic class, or Dictionary,
+            // return a dynamic reference value.
+            if base_type.escape_of_non_nullable().is_dynamic()
+            || base_type.escape_of_non_nullable() == map_defer_error(self.0.dictionary_type().defer())?
+            {
+                let k = map_defer_error(key.computed_or_local_name(self.0))?;
+                return Ok(Some(self.0.factory().create_dynamic_reference_value(base, qual, &k)));
             }
 
             return Ok(None);
