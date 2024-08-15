@@ -42,7 +42,6 @@ pub struct Database {
     vector_type: RefCell<Option<Entity>>,
     proxy_type: RefCell<Option<Entity>>,
     dictionary_type: RefCell<Option<Entity>>,
-    mxmlextrema_proxy_ns_prefix: String,
     mxmlextrema_proxy_ns_uri: String,
     mxmlextrema_proxy_ns: RefCell<Option<Entity>>,
     as3_ns: RefCell<Option<Entity>>,
@@ -126,7 +125,6 @@ impl Database {
             vector_type: RefCell::new(None),
             proxy_type: RefCell::new(None),
             dictionary_type: RefCell::new(None),
-            mxmlextrema_proxy_ns_prefix: options.mxmlextrema_proxy_ns_prefix,
             mxmlextrema_proxy_ns_uri: options.mxmlextrema_proxy_ns_uri,
             mxmlextrema_proxy_ns: RefCell::new(None),
             as3_ns: RefCell::new(None),
@@ -244,7 +242,7 @@ impl Database {
         if let Some(p) = self.mxmlextrema_utils_package.borrow().as_ref() {
             return p.clone();
         }
-        let p = self.factory().create_package(self.mxmlextrema_utils_package_name);
+        let p = self.factory().create_package(self.mxmlextrema_utils_package_name.iter().map(|s| s.as_str()));
         self.mxmlextrema_utils_package.replace(Some(p.clone()));
         p
     }
@@ -484,8 +482,6 @@ pub struct DatabaseOptions {
     /// The "AS3" namespace URI. Default: `"http://adobe.com/AS3/2006/builtin"`.
     pub as3_ns_uri: String,
 
-    /// The "flash_proxy" compliant namespace's prefix. Default: `"flash_proxy"`
-    pub mxmlextrema_proxy_ns_prefix: String,
     /// The "flash_proxy" compliant namespace's URI. Default: `"http://www.adobe.com/2006/actionscript/flash/proxy"`
     pub mxmlextrema_proxy_ns_uri: String,
     /// The "flash.utils" semi compliant package name. Default: `["flash", "utils"]`
@@ -497,7 +493,6 @@ impl Default for DatabaseOptions {
         Self {
             project_path: None,
             as3_ns_uri: "http://adobe.com/AS3/2006/builtin".into(),
-            mxmlextrema_proxy_ns_prefix: "flash_proxy".into(),
             mxmlextrema_proxy_ns_uri: "http://www.adobe.com/2006/actionscript/flash/proxy".into(),
             mxmlextrema_utils_package_name: vec!["flash".into(), "utils".into()],
         }

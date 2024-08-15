@@ -313,7 +313,7 @@ impl<'a> PropertyLookup<'a> {
                 return Ok(Some(self.0.factory().create_dynamic_scope_reference_value(scope, qual, &k)));
             }
 
-            let r = self.lookup_in_object(&obj, &open_ns_set, qual.clone(), key, calling)?;
+            let r = self.lookup_in_object(&obj, &open_ns_set, qual.clone(), key, false)?;
             if let Some(r) = r {
                 return Ok(Some(r));
             }
@@ -333,7 +333,7 @@ impl<'a> PropertyLookup<'a> {
                 let Some(local_name) = local_name else {
                     return Ok(None);
                 };
-                return self.lookup_in_object(&qual.package(), &open_ns_set, None, &PropertyLookupKey::LocalName(local_name.clone()), calling);
+                return self.lookup_in_object(&qual.package(), &open_ns_set, None, &PropertyLookupKey::LocalName(local_name.clone()), false);
             }
 
             if qual.is::<PackageRecursiveImport>() {
@@ -362,7 +362,7 @@ impl<'a> PropertyLookup<'a> {
         }
 
         if scope.is::<Activation>() && scope.this().is_some() && r.is_none() {
-            let r1 = self.lookup_in_object(&scope.this().unwrap(), &open_ns_set, qual.clone(), key, calling)?;
+            let r1 = self.lookup_in_object(&scope.this().unwrap(), &open_ns_set, qual.clone(), key, false)?;
             if let Some(r1) = r1 {
                 if !(r1.is::<DynamicReferenceValue>() || r1.is::<XmlReferenceValue>()) {
                     r = Some(r1);
@@ -372,7 +372,7 @@ impl<'a> PropertyLookup<'a> {
 
         // If scope is a class or enum scope and a local name key is specified
         if (scope.is::<ClassScope>() || scope.is::<EnumScope>()) && local_name.is_some() {
-            let r1 = self.lookup_in_object(&scope.class(), &open_ns_set, qual.clone(), key, calling)?;
+            let r1 = self.lookup_in_object(&scope.class(), &open_ns_set, qual.clone(), key, false)?;
             if r1.is_some() {
                 if r.is_some() {
                     return Err(PropertyLookupError::AmbiguousReference(local_name.as_ref().unwrap().clone()));
@@ -385,7 +385,7 @@ impl<'a> PropertyLookup<'a> {
 
         // For a package scope
         if scope.is::<PackageScope>() && has_known_ns && local_name.is_some() {
-            amb = self.lookup_in_object(&scope.package(), &open_ns_set, qual.clone(), key, calling)?;
+            amb = self.lookup_in_object(&scope.package(), &open_ns_set, qual.clone(), key, false)?;
             if amb.is_some() {
                 if r.is_some() {
                     return Err(PropertyLookupError::AmbiguousReference(local_name.as_ref().unwrap().clone()));
@@ -398,7 +398,7 @@ impl<'a> PropertyLookup<'a> {
             if has_known_ns {
                 for import in scope.import_list().iter() {
                     if import.is::<PackageWildcardImport>() {
-                        amb = self.lookup_in_object(&import.package(), &open_ns_set, qual.clone(), key, calling)?;
+                        amb = self.lookup_in_object(&import.package(), &open_ns_set, qual.clone(), key, false)?;
                         if let Some(amb) = amb {
                             Unused(self.0).mark_used(&import);
                             if r.is_some() && !r.as_ref().unwrap().fixture_reference_value_equals(&amb) {
@@ -474,7 +474,7 @@ impl<'a> PropertyLookup<'a> {
     }
 
     pub fn lookup_in_package_recursive(&self, package: &Entity, open_ns_set: &SharedArray<Entity>, qual: Option<Entity>, local_name: &PropertyLookupKey) -> Result<Option<Entity>, PropertyLookupError> {
-        let mut r = self.lookup_in_object(&package, &open_ns_set, qual.clone(), local_name, calling)?;
+        let mut r = self.lookup_in_object(&package, &open_ns_set, qual.clone(), local_name, false)?;
 
         for (_, subpackage) in package.subpackages().borrow().iter() {
             let r1 = self.lookup_in_package_recursive(subpackage, open_ns_set, qual.clone(), local_name)?;
