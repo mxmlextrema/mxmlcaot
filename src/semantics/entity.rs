@@ -618,11 +618,11 @@ smodel! {
         }
 
         pub fn prototype(&self, host: &Database) -> Names {
-            panic!();
+            Names::new()
         }
 
         pub fn properties(&self, host: &Database) -> Names {
-            panic!();
+            Names::new()
         }
 
         pub fn subpackages(&self) -> SharedMap<String, Entity> {
@@ -680,6 +680,18 @@ smodel! {
                 p = p1.parent();
             }
             r
+        }
+
+        pub fn available_definitions_in_package(&self, host: &Database, ns_set: &SharedArray<Entity>) -> Result<Vec<Entity>, DeferError> {
+            Ok(vec![])
+        }
+
+        pub fn available_static_definitions(&self, host: &Database, ns_set: &SharedArray<Entity>) -> Result<Vec<Entity>, DeferError> {
+            Ok(vec![])
+        }
+
+        pub fn available_prototype_definitions(&self, host: &Database, ns_set: &SharedArray<Entity>) -> Result<Vec<Entity>, DeferError> {
+            Ok(vec![])
         }
 
         pub fn type_params(&self) -> Option<SharedArray<Entity>> {
@@ -1236,6 +1248,16 @@ smodel! {
             self.set_m_asdoc(asdoc);
         }
 
+        pub override fn available_definitions_in_package(&self, host: &Database, ns_set: &SharedArray<Entity>) -> Result<Vec<Entity>, DeferError> {
+            let mut r: Vec<Entity> = vec![];
+            for (name, ent) in self.properties(host).borrow().iter() {
+                if name.accessible_from_ns_set(host, ns_set) {
+                    r.push(ent.clone());
+                }
+            }
+            Ok(r)
+        }
+
         override fn to_string_1(&self) -> String {
             self.fully_qualified_name()
         }
@@ -1561,6 +1583,42 @@ smodel! {
             Ok(!host.non_null_primitive_types()?.contains(&self.clone().into()))
         }
 
+        pub override fn available_static_definitions(&self, host: &Database, ns_set: &SharedArray<Entity>) -> Result<Vec<Entity>, DeferError> {
+            let mut r: Vec<Entity> = vec![];
+            let mut c: Entity = self.clone().into();
+            loop {
+                for (name, ent) in c.properties(host).borrow().iter() {
+                    if name.accessible_from_ns_set(host, ns_set) {
+                        r.push(ent.clone());
+                    }
+                }
+                if let Some(c1) = c.extends_class(host) {
+                    c = c1.defer()?;
+                } else {
+                    break;
+                }
+            }
+            Ok(r)
+        }
+
+        pub override fn available_prototype_definitions(&self, host: &Database, ns_set: &SharedArray<Entity>) -> Result<Vec<Entity>, DeferError> {
+            let mut r: Vec<Entity> = vec![];
+            let mut c: Entity = self.clone().into();
+            loop {
+                for (name, ent) in c.prototype(host).borrow().iter() {
+                    if name.accessible_from_ns_set(host, ns_set) {
+                        r.push(ent.clone());
+                    }
+                }
+                if let Some(c1) = c.extends_class(host) {
+                    c = c1.defer()?;
+                } else {
+                    break;
+                }
+            }
+            Ok(r)
+        }
+
         override fn to_string_1(&self) -> String {
             let name_1 = self.fully_qualified_name();
             let mut p = String::new();
@@ -1646,6 +1704,42 @@ smodel! {
 
         pub override fn prototype(&self, host: &Database) -> Names {
             self.m_prototype()
+        }
+
+        pub override fn available_static_definitions(&self, host: &Database, ns_set: &SharedArray<Entity>) -> Result<Vec<Entity>, DeferError> {
+            let mut r: Vec<Entity> = vec![];
+            let mut c: Entity = self.clone().into();
+            loop {
+                for (name, ent) in c.properties(host).borrow().iter() {
+                    if name.accessible_from_ns_set(host, ns_set) {
+                        r.push(ent.clone());
+                    }
+                }
+                if let Some(c1) = c.extends_class(host) {
+                    c = c1.defer()?;
+                } else {
+                    break;
+                }
+            }
+            Ok(r)
+        }
+
+        pub override fn available_prototype_definitions(&self, host: &Database, ns_set: &SharedArray<Entity>) -> Result<Vec<Entity>, DeferError> {
+            let mut r: Vec<Entity> = vec![];
+            let mut c: Entity = self.clone().into();
+            loop {
+                for (name, ent) in c.prototype(host).borrow().iter() {
+                    if name.accessible_from_ns_set(host, ns_set) {
+                        r.push(ent.clone());
+                    }
+                }
+                if let Some(c1) = c.extends_class(host) {
+                    c = c1.defer()?;
+                } else {
+                    break;
+                }
+            }
+            Ok(r)
         }
 
         pub override fn parent(&self) -> Option<Entity> {
@@ -1738,6 +1832,18 @@ smodel! {
 
         pub override fn prototype(&self, host: &Database) -> Names {
             self.m_prototype()
+        }
+
+        pub override fn available_prototype_definitions(&self, host: &Database, ns_set: &SharedArray<Entity>) -> Result<Vec<Entity>, DeferError> {
+            let mut r: Vec<Entity> = vec![];
+            let mut typelist = self.all_ascending_types(host);
+            typelist.push(self.clone().into());
+            for itrfc in typelist.iter() {
+                for (_, ent) in itrfc.prototype(host).borrow().iter() {
+                    r.push(ent.clone());
+                }
+            }
+            Ok(r)
         }
 
         pub override fn parent(&self) -> Option<Entity> {
@@ -1915,6 +2021,55 @@ smodel! {
             r
         }
 
+        pub override fn available_static_definitions(&self, host: &Database, ns_set: &SharedArray<Entity>) -> Result<Vec<Entity>, DeferError> {
+            if self.is_interface_type_possibly_after_sub() {
+                return Ok(vec![]);
+            }
+            let mut r: Vec<Entity> = vec![];
+            let mut c: Entity = self.clone().into();
+            loop {
+                for (name, ent) in c.properties(host).borrow().iter() {
+                    if name.accessible_from_ns_set(host, ns_set) {
+                        r.push(ent.clone());
+                    }
+                }
+                if let Some(c1) = c.extends_class(host) {
+                    c = c1.defer()?;
+                } else {
+                    break;
+                }
+            }
+            Ok(r)
+        }
+
+        pub override fn available_prototype_definitions(&self, host: &Database, ns_set: &SharedArray<Entity>) -> Result<Vec<Entity>, DeferError> {
+            let mut r: Vec<Entity> = vec![];
+            if self.is_interface_type_possibly_after_sub() {
+                let mut typelist = self.all_ascending_types(host);
+                typelist.push(self.clone().into());
+                for itrfc in typelist.iter() {
+                    for (_, ent) in itrfc.prototype(host).borrow().iter() {
+                        r.push(ent.clone());
+                    }
+                }
+                return Ok(r);
+            }
+            let mut c: Entity = self.clone().into();
+            loop {
+                for (name, ent) in c.prototype(host).borrow().iter() {
+                    if name.accessible_from_ns_set(host, ns_set) {
+                        r.push(ent.clone());
+                    }
+                }
+                if let Some(c1) = c.extends_class(host) {
+                    c = c1.defer()?;
+                } else {
+                    break;
+                }
+            }
+            Ok(r)
+        }
+
         pub override fn constructor_method(&self, host: &Database) -> Option<Entity> {
             if let Some(r) = self.m_constructor_method() {
                 return Some(r.clone());
@@ -2009,6 +2164,14 @@ smodel! {
             Ok(true)
         }
 
+        pub override fn available_static_definitions(&self, host: &Database, ns_set: &SharedArray<Entity>) -> Result<Vec<Entity>, DeferError> {
+            self.extends_class(host).map(|c| c.available_static_definitions(host, ns_set)).unwrap_or(Ok(vec![]))
+        }
+
+        pub override fn available_prototype_definitions(&self, host: &Database, ns_set: &SharedArray<Entity>) -> Result<Vec<Entity>, DeferError> {
+            self.extends_class(host).map(|c| c.available_prototype_definitions(host, ns_set)).unwrap_or(Ok(vec![]))
+        }
+
         override fn to_string_1(&self) -> String {
             format!("[{}]", self.element_types().iter().map(|e| e.to_string()).collect::<Vec<String>>().join(", "))
         }
@@ -2052,6 +2215,14 @@ smodel! {
 
         pub override fn is_options_class(&self) -> bool {
             false
+        }
+
+        pub override fn available_static_definitions(&self, host: &Database, ns_set: &SharedArray<Entity>) -> Result<Vec<Entity>, DeferError> {
+            self.extends_class(host).map(|c| c.available_static_definitions(host, ns_set)).unwrap_or(Ok(vec![]))
+        }
+
+        pub override fn available_prototype_definitions(&self, host: &Database, ns_set: &SharedArray<Entity>) -> Result<Vec<Entity>, DeferError> {
+            self.extends_class(host).map(|c| c.available_prototype_definitions(host, ns_set)).unwrap_or(Ok(vec![]))
         }
 
         #[inheritdoc]
@@ -2118,6 +2289,14 @@ smodel! {
             self.base()
         }
 
+        pub override fn available_static_definitions(&self, host: &Database, ns_set: &SharedArray<Entity>) -> Result<Vec<Entity>, DeferError> {
+            self.base().available_static_definitions(host, ns_set)
+        }
+
+        pub override fn available_prototype_definitions(&self, host: &Database, ns_set: &SharedArray<Entity>) -> Result<Vec<Entity>, DeferError> {
+            self.base().available_prototype_definitions(host, ns_set)
+        }
+
         override fn to_string_1(&self) -> String {
             if let Ok(ft) = self.base().to::<FunctionType>() {
                 format!("?{}", ft.to_string())
@@ -2155,6 +2334,14 @@ smodel! {
 
         pub override fn escape_of_nullable_or_non_nullable(&self) -> Entity {
             self.base()
+        }
+
+        pub override fn available_static_definitions(&self, host: &Database, ns_set: &SharedArray<Entity>) -> Result<Vec<Entity>, DeferError> {
+            self.base().available_static_definitions(host, ns_set)
+        }
+
+        pub override fn available_prototype_definitions(&self, host: &Database, ns_set: &SharedArray<Entity>) -> Result<Vec<Entity>, DeferError> {
+            self.base().available_prototype_definitions(host, ns_set)
         }
 
         override fn to_string_1(&self) -> String {
@@ -3906,15 +4093,19 @@ impl QName {
         self.0.m_local_name.clone()
     }
 
-    pub fn matches_in_ns_set_or_any_public_ns(&self, ns_set: &SharedArray<Entity>, local_name: &str) -> bool {
+    pub fn matches_in_ns_set_or_any_public_ns(&self, host: &Database, ns_set: &SharedArray<Entity>, local_name: &str) -> bool {
+        self.accessible_from_ns_set(host, ns_set) && self.local_name() == local_name
+    }
+
+    pub fn accessible_from_ns_set(&self, host: &Database, ns_set: &SharedArray<Entity>) -> bool {
         let ns1 = self.namespace();
-        if !ns1.is_public_ns() {
+        if !(ns1.is_public_ns() || ns1 == host.as3_ns()) {
             let found_ns = ns_set.iter().find(|ns2| &ns1 == ns2).is_some();
             if !found_ns {
                 return false;
             }
         }
-        self.local_name() == local_name
+        true
     }
 }
 

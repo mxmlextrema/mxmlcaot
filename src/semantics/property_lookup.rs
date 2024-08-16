@@ -127,10 +127,16 @@ impl<'a> PropertyLookup<'a> {
 
             // If not calling the property and base is a value whose type is one of
             // { XML, XML!, XMLList, XMLList! }, return a XML reference value.
+            //
+            // If not calling the property and base is a Dictionary, then return a dynamic reference value.
             if !calling {
                 if [defer(&self.0.xml_type())?, defer(&self.0.xml_list_type())?].contains(&base_esc_type) {
                     let k = map_defer_error(key.computed_or_local_name(self.0))?;
                     return Ok(Some(self.0.factory().create_xml_reference_value(base, qual, &k)));
+                }
+                if base_type.escape_of_non_nullable() == map_defer_error(self.0.dictionary_type().defer())? {
+                    let k = map_defer_error(key.computed_or_local_name(self.0))?;
+                    return Ok(Some(self.0.factory().create_dynamic_reference_value(base, qual, &k)));
                 }
             }
 
@@ -166,7 +172,7 @@ impl<'a> PropertyLookup<'a> {
                 return Ok(Some(self.0.factory().create_dynamic_reference_value(base, qual, &k)));
             };
 
-            // If base data type is one of { *, Object, Object! }, or a dynamic class, or Dictionary, or
+            // If base data type is one of { *, Object, Object! }, or
             // if qualifier is not a compile-time control namespace,
             // return a dynamic reference value..
             let any_or_object = [self.0.any_type(), defer(&self.0.object_type())?].contains(&base_esc_type);
@@ -238,11 +244,9 @@ impl<'a> PropertyLookup<'a> {
                 }
             }
 
-            // If base data type is a dynamic class, or Dictionary,
+            // If base data type is a dynamic class then
             // return a dynamic reference value.
-            if base_type.escape_of_non_nullable().is_dynamic()
-            || base_type.escape_of_non_nullable() == map_defer_error(self.0.dictionary_type().defer())?
-            {
+            if base_type.escape_of_non_nullable().is_dynamic() {
                 let k = map_defer_error(key.computed_or_local_name(self.0))?;
                 return Ok(Some(self.0.factory().create_dynamic_reference_value(base, qual, &k)));
             }
@@ -421,7 +425,7 @@ impl<'a> PropertyLookup<'a> {
                         if prop.is::<InvalidationEntity>() {
                             continue;
                         }
-                        if prop.name().matches_in_ns_set_or_any_public_ns(&open_ns_set, &local_name) {
+                        if prop.name().matches_in_ns_set_or_any_public_ns(self.0, &open_ns_set, &local_name) {
                             Unused(self.0).mark_used(&import);
 
                             if r.is_some() && !r.as_ref().unwrap().fixture_reference_value_equals(&prop) {
