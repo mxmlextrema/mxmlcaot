@@ -3865,6 +3865,39 @@ smodel! {
         }
     }
 
+    /// Byte array element reference value with a possibly non-nullable base.
+    /// The key is assumed to be of the `Number` data type.
+    pub struct ByteArrayElementReferenceValue: ReferenceValue {
+        let ref m_base: Option<Entity> = None;
+        let ref m_key: Option<Entity> = None;
+
+        pub(crate) fn ByteArrayElementReferenceValue(base: &Entity, key: &Entity, static_type: &Entity) {
+            super(static_type);
+            self.set_m_base(Some(base.clone()));
+            self.set_m_key(Some(key.clone()));
+        }
+
+        pub override fn base(&self) -> Entity {
+            self.m_base().unwrap()
+        }
+
+        pub override fn key(&self) -> Entity {
+            self.m_key().unwrap()
+        }
+
+        pub override fn read_only(&self, host: &Database) -> bool {
+            false
+        }
+
+        pub override fn write_only(&self, host: &Database) -> bool {
+            false
+        }
+
+        pub override fn deletable(&self, host: &Database) -> bool {
+            false
+        }
+    }
+
     /// Represents the resulting value of a conversion, whether implicit or explicit.
     pub struct ConversionValue: Value {
         let ref m_base: Option<Entity> = None;

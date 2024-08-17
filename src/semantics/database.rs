@@ -42,6 +42,7 @@ pub struct Database {
     vector_type: RefCell<Option<Entity>>,
     proxy_type: RefCell<Option<Entity>>,
     dictionary_type: RefCell<Option<Entity>>,
+    byte_array_type: RefCell<Option<Entity>>,
     mxmlextrema_proxy_ns_uri: String,
     mxmlextrema_proxy_ns: RefCell<Option<Entity>>,
     as3_ns: RefCell<Option<Entity>>,
@@ -125,6 +126,7 @@ impl Database {
             vector_type: RefCell::new(None),
             proxy_type: RefCell::new(None),
             dictionary_type: RefCell::new(None),
+            byte_array_type: RefCell::new(None),
             mxmlextrema_proxy_ns_uri: options.mxmlextrema_proxy_ns_uri,
             mxmlextrema_proxy_ns: RefCell::new(None),
             as3_ns: RefCell::new(None),
@@ -339,6 +341,20 @@ impl Database {
         let pckg = self.mxmlextrema_utils_package();
         if let Some(r) = pckg.properties(self).get(&self.factory().create_qname(&pckg.public_ns().unwrap().into(), "Dictionary".to_owned())) {
             self.dictionary_type.replace(Some(r.clone()));
+            r
+        } else {
+            self.unresolved_entity()
+        }
+    }
+
+    /// Retrieves `mxmlextrema.utils.ByteArray`, a possibly unresolved thing.
+    pub fn byte_array_type(&self) -> Entity {
+        if let Some(r) = self.byte_array_type.borrow().as_ref() {
+            return r.clone();
+        }
+        let pckg = self.mxmlextrema_utils_package();
+        if let Some(r) = pckg.properties(self).get(&self.factory().create_qname(&pckg.public_ns().unwrap().into(), "ByteArray".to_owned())) {
+            self.byte_array_type.replace(Some(r.clone()));
             r
         } else {
             self.unresolved_entity()

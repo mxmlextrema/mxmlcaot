@@ -529,6 +529,11 @@ impl<'a> Factory<'a> {
         Ok(VectorElementReferenceValue::new(&self.0.arena, base, key, &st).into())
     }
 
+    pub fn create_byte_array_element_reference_value(&self, base: &Entity, key: &Entity) -> Result<Entity, DeferError> {
+        let st = self.0.uint_type().defer()?;
+        Ok(ByteArrayElementReferenceValue::new(&self.0.arena, base, key, &st).into())
+    }
+
     pub fn create_static_reference_value(&self, base: &Entity, property: &Entity) -> Result<Entity, DeferError> {
         Ok(StaticReferenceValue::new(&self.0.arena, base, property, &property.property_static_type(self.0).defer()?).into())
     }
