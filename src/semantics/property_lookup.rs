@@ -252,9 +252,10 @@ impl<'a> PropertyLookup<'a> {
                 }
             }
 
-            // If base data type is a dynamic class then
+            // If base data type is a dynamic class or a Proxy then
             // return a dynamic reference value.
-            if base_type.escape_of_non_nullable().is_dynamic() {
+            let is_proxy = map_defer_error(base_type.is_equals_or_subtype_of(&map_defer_error(self.0.proxy_type().defer())?, self.0))?;
+            if is_proxy || base_type.escape_of_non_nullable().is_dynamic() {
                 let k = map_defer_error(key.computed_or_local_name(self.0))?;
                 return Ok(Some(self.0.factory().create_dynamic_reference_value(base, qual, &k)));
             }
