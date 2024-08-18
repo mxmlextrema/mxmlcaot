@@ -7,7 +7,6 @@ pub struct DeferError(pub Option<VerifierPhase>);
 
 /// Error used to indicate an ambiguous reference to a local name.
 #[derive(Clone, Debug)]
-#[non_exhaustive]
 pub struct AmbiguousReferenceError(pub String);
 
 #[derive(Clone)]
