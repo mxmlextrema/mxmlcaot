@@ -160,7 +160,7 @@ impl<'a> PropertyLookup<'a> {
                 }
 
                 // Attempt to index ByteArray
-                if base_esc_type == self.0.byte_array_type().defer()? {
+                if base_esc_type == map_defer_error(self.0.byte_array_type().defer())? {
                     let iv: Option<Entity> = map_defer_error(ConversionMethods(self.0).implicit(&map_defer_error(key.computed_or_local_name(self.0))?, &defer(&self.0.number_type())?, false))?;
                     if let Some(iv) = iv {
                         return Ok(Some(map_defer_error(self.0.factory().create_byte_array_element_reference_value(&base, &iv))?));
