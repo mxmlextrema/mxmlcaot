@@ -60,6 +60,14 @@ smodel! {
             panic!();
         }
 
+        pub fn is_external(&self) -> bool {
+            false
+        }
+
+        pub fn set_is_external(&self, value: bool) {
+            panic!();
+        }
+
         /// Indicates whether a variable slot is optional for an object initializer
         /// applied to an `[Options]` class.
         pub fn is_opt_variable_for_options_class(&self, host: &Database) -> Result<bool, DeferError> {
@@ -1619,6 +1627,16 @@ smodel! {
             Ok(r)
         }
 
+        pub override fn is_external(&self) -> bool {
+            self.m_flags().contains(ClassTypeFlags::IS_EXTERNAL)
+        }
+
+        pub override fn set_is_external(&self, value: bool) {
+            let mut v = self.m_flags();
+            v.set(ClassTypeFlags::IS_EXTERNAL, value);
+            self.set_m_flags(v);
+        }
+
         override fn to_string_1(&self) -> String {
             let name_1 = self.fully_qualified_name();
             let mut p = String::new();
@@ -1786,6 +1804,7 @@ smodel! {
         let ref m_asdoc: Option<Rc<Asdoc>> = None;
         let ref m_metadata: SharedArray<Rc<Metadata>> = SharedArray::new();
         let ref m_location: Option<Location> = None;
+        let m_external: bool = false;
 
         pub(crate) fn InterfaceType(name: QName) {
             super();
@@ -1872,6 +1891,14 @@ smodel! {
 
         pub override fn includes_null(&self, host: &Database) -> Result<bool, DeferError> {
             Ok(true)
+        }
+
+        pub override fn is_external(&self) -> bool {
+            self.m_external()
+        }
+
+        pub override fn set_is_external(&self, value: bool) {
+            self.set_m_external(value);
         }
 
         override fn to_string_1(&self) -> String {
@@ -2490,6 +2517,16 @@ smodel! {
             self.m_metadata()
         }
 
+        pub override fn is_external(&self) -> bool {
+            self.m_flags().contains(VariableSlotFlags::IS_EXTERNAL)
+        }
+
+        pub override fn set_is_external(&self, value: bool) {
+            let mut v = self.m_flags();
+            v.set(VariableSlotFlags::IS_EXTERNAL, value);
+            self.set_m_flags(v);
+        }
+
         override fn to_string_1(&self) -> String {
             self.fully_qualified_name()
         }
@@ -2695,6 +2732,16 @@ smodel! {
 
         pub override fn set_asdoc(&self, asdoc: Option<Rc<Asdoc>>) {
             self.set_m_asdoc(asdoc);
+        }
+
+        pub override fn is_external(&self) -> bool {
+            self.m_flags().contains(VirtualSlotFlags::IS_EXTERNAL)
+        }
+
+        pub override fn set_is_external(&self, value: bool) {
+            let mut v = self.m_flags();
+            v.set(VirtualSlotFlags::IS_EXTERNAL, value);
+            self.set_m_flags(v);
         }
 
         override fn to_string_1(&self) -> String {
@@ -2968,6 +3015,16 @@ smodel! {
 
         pub override fn set_overrides_method(&self, method: Option<Entity>) {
             self.set_m_overrides_method(method);
+        }
+
+        pub override fn is_external(&self) -> bool {
+            self.m_flags().contains(MethodSlotFlags::IS_EXTERNAL)
+        }
+
+        pub override fn set_is_external(&self, value: bool) {
+            let mut v = self.m_flags();
+            v.set(MethodSlotFlags::IS_EXTERNAL, value);
+            self.set_m_flags(v);
         }
 
         override fn to_string_1(&self) -> String {
@@ -4177,24 +4234,27 @@ impl DiagnosticArgument for QName {}
 bitflags! {
     #[derive(Copy, Clone, PartialEq, Eq)]
     struct ClassTypeFlags: u16 {
-        const IS_FINAL      = 0b00000001;
-        const IS_STATIC     = 0b00000010;
-        const IS_ABSTRACT   = 0b00000100;
-        const IS_DYNAMIC    = 0b00001000;
+        const IS_FINAL         = 0b00000001;
+        const IS_STATIC        = 0b00000010;
+        const IS_ABSTRACT      = 0b00000100;
+        const IS_DYNAMIC       = 0b00001000;
         const IS_OPTIONS_CLASS = 0b00010000;
+        const IS_EXTERNAL      = 0b00100000;
     }
 }
 
 bitflags! {
     #[derive(Copy, Clone, PartialEq, Eq)]
     struct VariableSlotFlags: u16 {
-        const READ_ONLY     = 0b00000010;
+        const READ_ONLY     = 0b00000001;
+        const IS_EXTERNAL   = 0b00000010;
     }
 }
 
 bitflags! {
     #[derive(Copy, Clone, PartialEq, Eq)]
     struct VirtualSlotFlags: u16 {
+        const IS_EXTERNAL   = 0b00000001;
     }
 }
 
@@ -4208,6 +4268,7 @@ bitflags! {
         const IS_ASYNC          = 0b000100000;
         const IS_GENERATOR      = 0b001000000;
         const IS_CONSTRUCTOR    = 0b010000000;
+        const IS_EXTERNAL       = 0b100000000;
     }
 }
 
