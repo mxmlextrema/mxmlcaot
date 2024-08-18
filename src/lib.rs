@@ -3,6 +3,7 @@
 pub mod errors;
 pub mod semantics;
 pub mod util;
+pub mod verifier;
 
 /// Unified compiler module.
 pub mod ns {
@@ -10,4 +11,5 @@ pub mod ns {
     pub use super::errors::*;
     pub use super::semantics::*;
     pub use super::util::*;
+    pub use super::verifier::*;
 }

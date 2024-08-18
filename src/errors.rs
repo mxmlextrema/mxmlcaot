@@ -3,7 +3,7 @@ use crate::ns::*;
 
 /// Error used to indicate that verification must be deferred.
 #[derive(Clone, PartialEq, Debug)]
-pub struct DeferError(pub Option<(u32, Option<String>)>);
+pub struct DeferError(pub Option<VerifierPhase>);
 
 /// Error used to indicate an ambiguous reference to a local name.
 #[derive(Clone, Debug)]
