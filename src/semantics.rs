@@ -1,3 +1,88 @@
+//! Semantic interfaces, including operations, factory and several entities.
+//!
+//! # Entity type
+//! 
+//! The `Entity` type represents one of several ActionScript 3 symbols, such as
+//! a class, a variable, a scope, or a value.
+//! 
+//! The `Entity` hierarchy is as follows:
+//! 
+//! - `Entity`
+//!   - `Scope`
+//!     - `Activation`
+//!     - `FilterScope`
+//!     - `FixtureScope`
+//!       - `ClassScope`
+//!       - `EnumScope`
+//!       - `InterfaceScope`
+//!       - `PackageScope`
+//!     - `WithScope`
+//!   - `Alias`
+//!   - `Type`
+//!     - `AnyType`
+//!     - `ClassType`
+//!     - `EnumType`
+//!     - `FunctionType`
+//!     - `InterfaceType`
+//!     - `NonNullableType`
+//!     - `NullableType`
+//!     - `TupleType`
+//!     - `TypeAfterSubstitution`
+//!     - `TypeParameterType`
+//!     - `VoidType`
+//!   - `Value`
+//!     - `ReferenceValue`
+//!       - `ArrayElementReferenceValue`
+//!       - `ByteArrayElementReferenceValue`
+//!       - `DynamicReferenceValue`
+//!       - `DynamicScopeReferenceValue`
+//!       - `FixtureReferenceValue`
+//!       - `InstanceReferenceValue`
+//!       - `PackageReferenceValue`
+//!       - `ScopeReferenceValue`
+//!       - `StaticDynamicReferenceValue`
+//!       - `StaticReferenceValue`
+//!       - `TupleReferenceValue`
+//!       - `VectorElementReferenceValue`
+//!       - `XmlReferenceValue`
+//!     - `Constant`
+//!       - `BooleanConstant`
+//!       - `NamespaceConstant`
+//!       - `NullConstant`
+//!       - `NumberConstant`
+//!       - `StringConstant`
+//!       - `TypeConstant`
+//!       - `UndefinedConstant`
+//!     - `ConversionValue`
+//!     - `FilterValue`
+//!     - `LambdaObject`
+//!     - `MetaEnvProperty`
+//!     - `MetaProperty`
+//!     - `NonNullValue`
+//!     - `PackagePropertyImport`
+//!     - `PackageRecursiveImport`
+//!     - `PackageWildcardImport`
+//!     - `ThisObject`
+//!   - `FieldResolution`
+//!   - `AssignmentFieldDestructuringResolution`
+//!   - `DeclarativeFieldDestructuringResolution`
+//!   - `Namespace`
+//!     - `ExplicitNamespace`
+//!     - `SystemNamespace`
+//!     - `UserNamespace`
+//!   - `InvalidationEntity`
+//!   - `UnresolvedEntity`
+//!   - `MethodSlot`
+//!     - `MethodSlotAfterSubstitution`
+//!     - `OriginalMethodSlot`
+//!   - `VariableSlot`
+//!     - `OriginalVariableSlot`
+//!     - `VariableSlotAfterSubstitution`
+//!   - `VirtualSlot`
+//!     - `OriginalVirtualSlot`
+//!     - `VirtualSlotAfterSubstitution`
+//!   - `Package`
+
 mod interface_implement;
 pub use interface_implement::*;
 
