@@ -1,5 +1,6 @@
 use crate::ns::*;
 
+/// Operation for verifying the implementation of an interface over a class.
 pub struct InterfaceImplement<'a>(pub &'a Database);
 
 impl<'a> InterfaceImplement<'a> {

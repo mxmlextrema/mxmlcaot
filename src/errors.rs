@@ -1,3 +1,5 @@
+//! Errors returned from the semantic model.
+
 use std::fmt::Debug;
 use crate::ns::*;
 

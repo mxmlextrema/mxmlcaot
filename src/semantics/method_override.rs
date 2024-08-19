@@ -1,5 +1,7 @@
 use crate::ns::*;
 
+/// Operations for listing "not" overriden abstract methods and for
+/// overriding a method.
 pub struct MethodOverride<'a>(pub &'a Database);
 
 impl<'a> MethodOverride<'a> {

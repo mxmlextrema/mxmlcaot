@@ -1,6 +1,6 @@
 use crate::ns::*;
 
-/// Apply types to a parameterized type across several entities.
+/// Operation for applying types to a parameterized type across several entities.
 pub struct ApplyType<'a>(pub &'a Database);
 
 impl<'a> ApplyType<'a> {

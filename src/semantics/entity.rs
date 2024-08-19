@@ -1094,6 +1094,8 @@ smodel! {
         }
     }
 
+    /// Either a system, user, or explicit namespace. The *user* and *explicit*
+    /// namespaces are redundant in terms of functionality.
     pub struct Namespace: Entity {
         pub(crate) fn Namespace() {
             super();
@@ -1109,6 +1111,7 @@ smodel! {
         }
     }
 
+    /// A public, private, protected, internal, or static-protected namespace.
     pub struct SystemNamespace: Namespace {
         let m_kind: SystemNamespaceKind = SystemNamespaceKind::Public;
         let ref m_parent: Option<Entity> = None;
@@ -1153,6 +1156,7 @@ smodel! {
     }
 
     /// In the AVM2, this is equivalent to a `CONSTANT_Namespace` namespace.
+    /// In terms of functionality, this is redundant to `ExplicitNamespace`.
     pub struct UserNamespace: Namespace {
         let ref m_uri: String = "".into();
 
@@ -1171,6 +1175,7 @@ smodel! {
     }
 
     /// In the AVM2, this is equivalent to a `CONSTANT_ExplicitNamespace` namespace.
+    /// In terms of functionality, this is redundant to `UserNamespace`.
     pub struct ExplicitNamespace: Namespace {
         let ref m_uri: String = "".into();
 
@@ -1271,6 +1276,8 @@ smodel! {
         }
     }
 
+    /// An alias resulting from either an `import` directive, or a `type` definition,
+    /// or a `public += com.p.n;` directive, for example.
     pub struct Alias: Entity {
         let ref m_name: Option<QName> = None;
         let ref m_alias_of: Option<Entity> = None;
@@ -1320,6 +1327,7 @@ smodel! {
         }
     }
 
+    /// One of several types.
     pub struct Type: Entity {
         pub override fn includes_undefined(&self, host: &Database) -> Result<bool, DeferError> {
             Ok(true)
@@ -1354,6 +1362,7 @@ smodel! {
         }
     }
 
+    /// The `*` type.
     pub struct AnyType : Type {
         pub(crate) fn AnyType() {
             super();
@@ -1372,6 +1381,7 @@ smodel! {
         }
     }
 
+    /// The `void` type.
     pub struct VoidType : Type {
         pub(crate) fn VoidType() {
             super();
@@ -1390,6 +1400,7 @@ smodel! {
         }
     }
 
+    /// A `class` definitino, possibly parameterized.
     pub struct ClassType: Type {
         let ref m_name: Option<QName> = None;
         let m_flags: ClassTypeFlags = ClassTypeFlags::empty();
@@ -1646,7 +1657,8 @@ smodel! {
             name_1 + &p
         }
     }
-    
+
+    /// A `enum` definition.
     pub struct EnumType: Type {
         let ref m_name: Option<QName> = None;
         let ref m_parent: Option<Entity> = None;
@@ -1793,6 +1805,7 @@ smodel! {
         }
     }
 
+    /// An `interface` definition, possibly parameterized.
     pub struct InterfaceType: Type {
         let ref m_name: Option<QName> = None;
         let ref m_type_params: Option<SharedArray<Entity>> = None;
@@ -2333,6 +2346,7 @@ smodel! {
         }
     }
 
+    /// The non-nullable type `T!`.
     pub struct NonNullableType: Type {
         let ref m_base: Option<Entity> = None;
 
@@ -2380,6 +2394,7 @@ smodel! {
         }
     }
 
+    /// A type corresponding to a type parameter from a class or interface.
     pub struct TypeParameterType: Type {
         let ref m_name: Option<QName> = None;
         let ref m_location: Option<Location> = None;
@@ -2414,7 +2429,7 @@ smodel! {
         }
     }
 
-    /// Either an *original* variable slot, or a variable slot after substitution.
+    /// Either an **original** variable slot, or a variable slot after substitution.
     pub struct VariableSlot: Entity {
         fn VariableSlot() {
             super();
@@ -2614,7 +2629,7 @@ smodel! {
         }
     }
 
-    /// Either an *original* virtual slot, or a virtual slot after substitution.
+    /// Either an **original** virtual slot, or a virtual slot after substitution.
     pub struct VirtualSlot: Entity {
         fn VirtualSlot() {
             super();
@@ -2848,7 +2863,7 @@ smodel! {
         }
     }
 
-    /// Either an *original* method slot, or a method slot after substitution.
+    /// Either an **original** method slot, or a method slot after substitution.
     pub struct MethodSlot: Entity {
         fn MethodSlot() {
             super();
@@ -3730,6 +3745,7 @@ smodel! {
         }
     }
 
+    /// A dynamic reference whose base is a class object itself.
     pub struct StaticDynamicReferenceValue: ReferenceValue {
         let ref m_base: Option<Entity> = None;
         let ref m_qual: Option<Entity> = None;

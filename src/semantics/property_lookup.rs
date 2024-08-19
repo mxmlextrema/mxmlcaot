@@ -1,5 +1,6 @@
 use crate::ns::*;
 
+/// Methods for looking up a property in an object, package or scope.
 pub struct PropertyLookup<'a>(pub &'a Database);
 
 #[derive(Clone)]

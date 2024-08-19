@@ -1,6 +1,6 @@
 use crate::ns::*;
 
-/// Manage unused entities.
+/// Handle unused entities.
 pub struct Unused<'a>(pub &'a Database);
 
 impl<'a> Unused<'a> {

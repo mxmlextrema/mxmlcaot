@@ -1,3 +1,5 @@
+//! Common utility types and methods.
+
 pub use hydroperfox_smodel::util::{
     SharedArray,
     SharedMap,
