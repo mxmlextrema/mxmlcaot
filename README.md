@@ -42,6 +42,7 @@ The minimum requisites for the framework globals so that the MXMLCAOT database d
 - Date
 - Promise.\<T\>
 - Vector.\<T\> (in the top-level package)
+- frameworkname.util.ByteArray
 - frameworkname.util.Dictionary
 - frameworkname.util.Proxy
 
