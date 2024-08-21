@@ -962,10 +962,10 @@ smodel! {
             let mut scope = Some(self.clone());
             while let Some(scope1) = scope {
                 if scope1.is::<PackageScope>() || scope1.is::<Activation>() {
-                    if ns == SystemNamespaceKind::Public {
+                    if ns == SystemNamespaceKind::Public && scope1.public_ns().is_some() {
                         return scope1.public_ns();
                     }
-                    if ns == SystemNamespaceKind::Internal {
+                    if ns == SystemNamespaceKind::Internal && scope1.internal_ns().is_some() {
                         return scope1.internal_ns();
                     }
                 } else if scope1.is::<ClassScope>() {
