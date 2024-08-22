@@ -480,6 +480,9 @@ impl<'a> Factory<'a> {
     }
 
     pub fn create_namespace_constant(&self, referenced_ns: &Entity) -> Result<Entity, DeferError> {
+        if referenced_ns.is::<NamespaceConstant>() {
+            return Ok(referenced_ns.clone());
+        }
         Ok(NamespaceConstant::new(&self.0.arena, referenced_ns, &self.0.namespace_type().defer()?).into())
     }
 
