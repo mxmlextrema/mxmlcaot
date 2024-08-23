@@ -402,6 +402,13 @@ smodel! {
         pub fn set_is_abstract(&self, value: bool) {
         }
 
+        pub fn is_native(&self) -> bool {
+            false
+        }
+
+        pub fn set_is_native(&self, value: bool) {
+        }
+
         pub fn is_final(&self) -> bool {
             false
         }
@@ -2928,6 +2935,16 @@ smodel! {
             self.set_m_flags(v);
         }
 
+        pub override fn is_native(&self) -> bool {
+            self.m_flags().contains(MethodSlotFlags::IS_NATIVE)
+        }
+    
+        pub override fn set_is_native(&self, value: bool) {
+            let mut v = self.m_flags();
+            v.set(MethodSlotFlags::IS_NATIVE, value);
+            self.set_m_flags(v);
+        }
+
         pub override fn is_overriding(&self) -> bool {
             self.m_flags().contains(MethodSlotFlags::IS_OVERRIDING)
         }
@@ -3090,6 +3107,10 @@ smodel! {
 
         pub override fn is_abstract(&self) -> bool {
             self.origin().is_abstract()
+        }
+
+        pub override fn is_native(&self) -> bool {
+            self.origin().is_native()
         }
 
         pub override fn is_overriding(&self) -> bool {
@@ -4285,6 +4306,7 @@ bitflags! {
         const IS_GENERATOR      = 0b001000000;
         const IS_CONSTRUCTOR    = 0b010000000;
         const IS_EXTERNAL       = 0b100000000;
+        const IS_NATIVE         = 0b1000000000;
     }
 }
 
