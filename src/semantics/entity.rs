@@ -4453,7 +4453,10 @@ impl Iterator for DescendingDefinitionHierarchy {
 
 #[derive(Clone)]
 pub struct Event {
+    /// Possibly `UnresolvedEntity`.
     pub data_type: Entity,
+    /// Variable slot that identifies
+    /// the event.
     pub constant: Option<Entity>,
     pub bubbles: Option<bool>,
 }

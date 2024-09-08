@@ -218,6 +218,22 @@ impl Database {
         self.config_constants_result.clone()
     }
 
+    pub fn list_user_namespaces(&self) -> Vec<Entity> {
+        let mut r: Vec<Entity> = vec![];
+        for (_, ns) in self.user_namespaces.borrow().iter() {
+            r.push(ns.clone());
+        }
+        r
+    }
+
+    pub fn list_explicit_namespaces(&self) -> Vec<Entity> {
+        let mut r: Vec<Entity> = vec![];
+        for (_, ns) in self.explicit_namespaces.borrow().iter() {
+            r.push(ns.clone());
+        }
+        r
+    }
+
     pub fn empty_empty_qname(&self) -> QName {
         self.empty_empty_qname.borrow().as_ref().unwrap().clone()
     }

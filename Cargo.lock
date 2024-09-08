@@ -197,7 +197,7 @@ dependencies = [
 
 [[package]]
 name = "mxmlextrema-mxmlcaot"
-version = "0.3.11"
+version = "0.3.12"
 dependencies = [
  "bitflags",
  "by_address",
